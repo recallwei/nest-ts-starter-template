@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common'
 import { sep } from 'path'
 
-import { File } from './entities'
+import { FileVo } from './vo'
 
 @Injectable()
 export class FilesService {
-  upload(files: Express.Multer.File[]): File[] {
+  upload(files: Express.Multer.File[]): FileVo[] {
     const filesResult =
       files?.map((file) => {
         const { fieldname, filename, mimetype, size, originalname } = file
@@ -19,7 +19,7 @@ export class FilesService {
           mimetype,
           size
         })
-        return new File({
+        return new FileVo({
           path,
           fieldname,
           filename,

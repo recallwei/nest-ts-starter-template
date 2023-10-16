@@ -3,9 +3,9 @@
   "description": "",
   "author": "",
   "scripts": {
-    "start": "nest start",
-    "start:dev": "nest start --watch",
-    "start:debug": "nest start --debug --watch",
+    "start": "nest start -- -b swc",
+    "start:dev": "nest start --watch -- -b swc",
+    "start:debug": "nest start --debug --watch -- -b swc",
     "start:prod": "node dist/main",
     "build": "nest build",
     "build:webpack": "nest build --webpack",
@@ -24,8 +24,10 @@
   "dependencies": {
     "@nestjs/common": "^10.2.7",
     "@nestjs/core": "^10.2.7",
-    "@nestjs/mapped-types": "*",
+    "@nestjs/mapped-types": "2.0.2",
     "@nestjs/platform-express": "^10.2.7",
+    "@nestjs/swagger": "^7.1.13",
+    "class-transformer": "^0.5.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
     "uuid": "^9.0.1"
