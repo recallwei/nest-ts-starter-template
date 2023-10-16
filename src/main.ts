@@ -21,6 +21,6 @@ async function bootstrap() {
   app.useStaticAssets('public', { prefix: '/static' })
   app.useStaticAssets('uploads', { prefix: '/uploads' })
 
-  await app.listen(3000)
+  await app.listen(4777)
 }
 bootstrap().catch(() => {})
