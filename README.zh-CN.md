@@ -1,30 +1,36 @@
 # Nest TypeScript Starter Template
 
-English / [简体中文](./README.zh-CN.md)
+[English](./README.md) / 简体中文
 
-An opinionated Nest/TypeScript starter template.
+一个固执己见、基于 Nest 和 TypeScript 的启动模板。
 
-## Tech Stack
+## 技术栈
 
 - Nest
 - TypeScript
 - Prisma
 - PostgreSQL
 
-## Usage
+## 使用
 
-### Install
+### 安装
 
 ```bash
 pnpm i
 ```
 
-### Build
+### 启动
+
+```bash
+pnpm dev
+```
+
+### 构建
 
 ```bash
 pnpm build
 ```
 
-## License
+## 许可证
 
 [MIT](/LICENSE) License &copy; 2023 [Bruce Song](https://github.com/recallwei)
