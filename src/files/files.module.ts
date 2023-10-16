@@ -31,6 +31,7 @@ import { FilesService } from './files.service'
           callback(null, true)
         } else {
           callback(
+            // TODO: i18n
             new UnprocessableEntityException('无法处理的文件类型'),
             false
           )
