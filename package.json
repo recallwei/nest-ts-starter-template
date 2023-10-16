@@ -9,13 +9,17 @@
     "start:prod": "node dist/main",
     "build": "nest build",
     "build:webpack": "nest build --webpack",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "cspell:check": "cspell \"**\"",
+    "eslint:check": "eslint \"{src,apps,libs,test}/**/*.ts\" --color",
+    "eslint:fix": "pnpm eslint:check --fix",
+    "prettier:check": "prettier --check --ignore-unknown .",
+    "prettier:fix": "prettier --write --ignore-unknown .",
+    "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
     "@nestjs/common": "^10.2.7",
@@ -25,6 +29,7 @@
     "rxjs": "^7.8.1"
   },
   "devDependencies": {
+    "@brucesong/eslint-config-ts": "^1.0.11",
     "@nestjs/cli": "^10.1.18",
     "@nestjs/schematics": "^10.0.2",
     "@nestjs/testing": "^10.2.7",
