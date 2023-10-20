@@ -35,7 +35,7 @@ async function bootstrap() {
   app.useStaticAssets('public', { prefix: '/static' })
   app.useStaticAssets('uploads', { prefix: '/uploads' })
 
-  // Swagger
+  // Swagger 配置
   const config = new DocumentBuilder()
     .setTitle('Nest API')
     .setDescription(

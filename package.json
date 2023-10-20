@@ -15,6 +15,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
+    "prisma:seed": "prisma db seed",
     "cspell:check": "cspell \"**\"",
     "eslint:check": "eslint \"{src,apps,libs,test}/**/*.ts\" --color",
     "eslint:fix": "pnpm eslint:check --fix",
@@ -28,6 +29,7 @@
     "@nestjs/mapped-types": "2.0.2",
     "@nestjs/platform-express": "^10.2.7",
     "@nestjs/swagger": "^7.1.13",
+    "@node-rs/bcrypt": "^1.7.3",
     "@prisma/client": "5.4.2",
     "class-transformer": "^0.5.1",
     "reflect-metadata": "^0.1.13",
@@ -56,6 +58,10 @@
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.2.2"
+  },
+  "prisma": {
+    "schema": "prisma/schema.prisma",
+    "seed": "ts-node prisma/seed.ts"
   },
   "jest": {
     "moduleFileExtensions": [
