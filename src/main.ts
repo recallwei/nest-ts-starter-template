@@ -16,7 +16,15 @@ async function bootstrap() {
   // 启用版本控制
   app.enableVersioning({ type: VersioningType.URI })
 
-  // 启用 shutdown hooks
+  /**
+   * 使用应用 shutdown 相关的生命周期，必须启用 shutdown hooks
+   * - onModuleDestroy()
+   * - beforeApplicationShutdown()
+   * - onApplicationShutdown()
+   *
+   * 默认建议关闭，会占用一定的性能，仅当需要时才启用
+   * @see https://docs.nestjs.com/fundamentals/lifecycle-events#application-shutdown
+   */
   app.enableShutdownHooks()
 
   /**
