@@ -1,8 +1,8 @@
 version: '3'
 services:
   postgres:
-    image: postgres:15
-    container_name: nest-ts-starter-template-db
+    image: postgres:16
+    container_name: postgres-db
     restart: always
     ports:
       - 5433:5432
