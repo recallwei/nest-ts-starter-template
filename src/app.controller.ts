@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common'
+import { Controller, Get, Inject } from '@nestjs/common'
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
 
 import { AppService } from './app.service'
@@ -6,7 +6,8 @@ import { AppService } from './app.service'
 @ApiTags('应用')
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  @Inject(AppService)
+  private readonly appService: AppService
 
   @ApiOperation({ summary: '应用信息' })
   @ApiOkResponse({ description: '请求成功', type: String })

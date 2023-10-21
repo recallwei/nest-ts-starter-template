@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
 
 import { UsersService } from '@/users/users.service'
 
@@ -6,10 +6,11 @@ import type { LoginDto } from './dto'
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly usersService: UsersService) {}
+  @Inject(UsersService)
+  private readonly usersService: UsersService
 
   signup() {
-    return this.usersService.findAll()
+    return this.usersService.findCurrent()
   }
 
   loginByUsername(loginDto: LoginDto) {

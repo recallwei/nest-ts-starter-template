@@ -4,7 +4,6 @@
   "sourceRoot": "src",
   "entryFile": "main",
   "generateOptions": {
-    "spec": false,
     "flat": false
   },
   "compilerOptions": {

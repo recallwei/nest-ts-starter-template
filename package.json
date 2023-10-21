@@ -32,6 +32,7 @@
     "@node-rs/bcrypt": "^1.7.3",
     "@prisma/client": "5.4.2",
     "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
     "uuid": "^9.0.1"

@@ -1,9 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger'
+import { IsNotEmpty } from 'class-validator'
 
 export class LoginDto {
-  @ApiProperty({ name: 'username', description: '用户名', type: String })
+  @ApiProperty({ description: '用户名' })
+  @IsNotEmpty()
   readonly username: string
 
-  @ApiProperty({ name: 'password', description: '密码', type: String })
+  @ApiProperty({ description: '密码' })
+  @IsNotEmpty()
   readonly password: string
 }

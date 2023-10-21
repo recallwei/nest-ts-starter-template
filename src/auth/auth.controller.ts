@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Inject,
   Post,
   Query
 } from '@nestjs/common'
@@ -27,12 +28,13 @@ import { LoginVo } from './vo'
 @ApiTags('认证')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  @Inject(AuthService)
+  private readonly authService: AuthService
 
   @ApiOperation({ summary: '注册' })
   @ApiCreatedResponse({ description: '注册成功' })
   @ApiBadRequestResponse({ description: '输入有误' })
-  @ApiUnauthorizedResponse({ description: '授权失败' })
+  @ApiUnauthorizedResponse({ description: '认证失败' })
   @ApiConflictResponse({ description: '用户名已存在' })
   @Post('signup')
   signup() {
@@ -42,8 +44,8 @@ export class AuthController {
   @ApiOperation({ summary: '登录' })
   @ApiOkResponse({ description: '登录成功', type: LoginVo })
   @ApiBadRequestResponse({ description: '用户名或密码不正确' })
-  @ApiUnauthorizedResponse({ description: '授权失败' })
-  @ApiNotImplementedResponse({ description: '不支持该登录方法' })
+  @ApiUnauthorizedResponse({ description: '认证失败' })
+  @ApiNotImplementedResponse({ description: '不支持该登录方式' })
   @ApiQuery({
     name: 'type',
     type: String,
@@ -55,7 +57,6 @@ export class AuthController {
   @ApiBody({
     type: LoginDto,
     description: '登录信息',
-    required: true,
     examples: {
       admin: {
         value: {

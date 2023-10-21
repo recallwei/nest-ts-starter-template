@@ -19,7 +19,7 @@ async function main() {
     country: 'China',
     province: 'Jiangsu',
     city: 'Suzhou',
-    profile: 'Author of Nest TypeScript Starter Template',
+    biography: 'Author of Nest TypeScript Starter Template',
     enabled: true,
     builtIn: true
   }

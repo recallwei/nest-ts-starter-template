@@ -1,5 +1,9 @@
-import { VersioningType } from '@nestjs/common'
-import { NestFactory } from '@nestjs/core'
+import {
+  ClassSerializerInterceptor,
+  ValidationPipe,
+  VersioningType
+} from '@nestjs/common'
+import { NestFactory, Reflector } from '@nestjs/core'
 import type { NestExpressApplication } from '@nestjs/platform-express'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 
@@ -26,6 +30,22 @@ async function bootstrap() {
    * @see https://docs.nestjs.com/fundamentals/lifecycle-events#application-shutdown
    */
   app.enableShutdownHooks()
+
+  // 全局管道
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true, // 自动删除非 dto 中的属性
+      transform: true, // 自动转换类型
+      transformOptions: {
+        enableImplicitConversion: true // 允许隐式转换,
+      },
+      // disableErrorMessages: true, // 禁用错误消息
+      stopAtFirstError: true
+    })
+  )
+
+  // 全局拦截器
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)))
 
   /**
    * 静态资源

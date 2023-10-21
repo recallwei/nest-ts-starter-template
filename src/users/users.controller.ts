@@ -3,7 +3,9 @@ import {
   Controller,
   Delete,
   Get,
+  Inject,
   Param,
+  ParseIntPipe,
   Patch,
   Post
 } from '@nestjs/common'
@@ -18,7 +20,8 @@ import {
   ApiOperation,
   ApiParam,
   ApiQuery,
-  ApiTags
+  ApiTags,
+  ApiUnauthorizedResponse
 } from '@nestjs/swagger'
 
 import { CreateUserDto } from './dto/create-user.dto'
@@ -29,12 +32,15 @@ import { UsersService } from './users.service'
 @ApiBearerAuth('bearer')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  @Inject(UsersService)
+  private readonly usersService: UsersService
 
   @ApiOperation({ summary: '创建用户' })
   @ApiCreatedResponse({ description: '创建成功' })
+  @ApiUnauthorizedResponse({ description: '认证失败' })
   @ApiBadRequestResponse({ description: '参数错误' })
   @ApiConflictResponse({ description: '用户已存在' })
+  @ApiBody({ description: '用户信息', type: CreateUserDto })
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto)
@@ -42,6 +48,7 @@ export class UsersController {
 
   @ApiOperation({ summary: '用户列表' })
   @ApiOkResponse({ description: '请求成功' })
+  @ApiUnauthorizedResponse({ description: '认证失败' })
   @ApiQuery({ name: 'page', description: '页码', required: true, example: 1 })
   @ApiQuery({
     name: 'pageSize',
@@ -50,49 +57,48 @@ export class UsersController {
     example: 10
   })
   @Get()
-  findAll() {
-    return this.usersService.findAll()
+  findMany() {
+    return this.usersService.findMany()
+  }
+
+  @ApiOperation({ summary: '当前用户' })
+  @ApiOkResponse({ description: '请求成功' })
+  @ApiUnauthorizedResponse({ description: '认证失败' })
+  @Get('info')
+  findCurrent() {
+    return this.usersService.findCurrent()
   }
 
   @ApiOperation({ summary: '用户详情' })
   @ApiOkResponse({ description: '请求成功' })
+  @ApiUnauthorizedResponse({ description: '认证失败' })
   @ApiNotFoundResponse({ description: '用户不存在' })
-  @ApiParam({
-    name: 'id',
-    description: '用户 ID',
-    required: true,
-    example: 1
-  })
+  @ApiParam({ name: 'id', description: '用户 ID', required: true, example: 1 })
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id)
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.usersService.findOneById(id)
   }
 
   @ApiOperation({ summary: '修改用户' })
   @ApiOkResponse({ description: '请求成功' })
+  @ApiUnauthorizedResponse({ description: '认证失败' })
   @ApiBadRequestResponse({ description: '参数错误' })
-  @ApiParam({
-    name: 'id',
-    description: '用户 ID',
-    required: true
-  })
+  @ApiNotFoundResponse({ description: '用户不存在' })
+  @ApiParam({ name: 'id', description: '用户 ID', required: true })
   @ApiBody({ description: '用户信息', type: UpdateUserDto })
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto)
+  update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.update(id, updateUserDto)
   }
 
   @ApiOperation({ summary: '删除用户' })
   @ApiOkResponse({ description: '删除成功' })
+  @ApiUnauthorizedResponse({ description: '认证失败' })
   @ApiBadRequestResponse({ description: '参数错误' })
   @ApiNotFoundResponse({ description: '用户不存在' })
-  @ApiParam({
-    name: 'id',
-    description: '用户 ID',
-    required: true
-  })
+  @ApiParam({ name: 'id', description: '用户 ID', required: true })
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id)
+  remove(@Param('id') id: number) {
+    return this.usersService.remove(id)
   }
 }

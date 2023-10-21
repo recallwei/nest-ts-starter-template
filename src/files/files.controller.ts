@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Inject,
   Param,
   Post,
   Res,
@@ -30,7 +31,8 @@ import { FileVo } from './vo'
 @ApiBearerAuth('bearer')
 @Controller('files')
 export class FilesController {
-  constructor(private readonly filesService: FilesService) {}
+  @Inject(FilesService)
+  private readonly filesService: FilesService
 
   @ApiOperation({ summary: '上传文件' })
   @ApiConsumes('multipart/form-data')

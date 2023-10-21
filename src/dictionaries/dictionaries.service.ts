@@ -9,7 +9,7 @@ export class DictionariesService {
     return 'This action adds a new dictionary'
   }
 
-  findAll() {
+  findMany() {
     return 'This action returns all dictionaries'
   }
 
