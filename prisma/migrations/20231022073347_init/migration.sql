@@ -160,7 +160,7 @@ CREATE TABLE "system_dictionary_trans" (
 );
 
 -- CreateTable
-CREATE TABLE "system_dictionary_item" (
+CREATE TABLE "system_dictionary_data" (
     "id" SERIAL NOT NULL,
     "key" VARCHAR(255) NOT NULL,
     "value" VARCHAR(255),
@@ -175,11 +175,11 @@ CREATE TABLE "system_dictionary_item" (
     "deleted_at" TIMESTAMPTZ(3),
     "deleted_by" INTEGER,
 
-    CONSTRAINT "system_dictionary_item_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "system_dictionary_data_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "system_dictionary_kv_trans" (
+CREATE TABLE "system_dictionary_data_trans" (
     "id" SERIAL NOT NULL,
     "lang" "Lang" NOT NULL,
     "label" VARCHAR(255),
@@ -192,7 +192,7 @@ CREATE TABLE "system_dictionary_kv_trans" (
     "deleted_at" TIMESTAMPTZ(3),
     "deleted_by" INTEGER,
 
-    CONSTRAINT "system_dictionary_kv_trans_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "system_dictionary_data_trans_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -342,10 +342,10 @@ CREATE UNIQUE INDEX "system_dictionary_code_key" ON "system_dictionary"("code");
 CREATE UNIQUE INDEX "system_dictionary_trans_dictionary_id_lang_key" ON "system_dictionary_trans"("dictionary_id", "lang");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "system_dictionary_item_key_key" ON "system_dictionary_item"("key");
+CREATE UNIQUE INDEX "system_dictionary_data_key_key" ON "system_dictionary_data"("key");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "system_dictionary_kv_trans_dictionary_kv_id_lang_key" ON "system_dictionary_kv_trans"("dictionary_kv_id", "lang");
+CREATE UNIQUE INDEX "system_dictionary_data_trans_dictionary_kv_id_lang_key" ON "system_dictionary_data_trans"("dictionary_kv_id", "lang");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "system_setting_key_key" ON "system_setting"("key");
@@ -375,10 +375,10 @@ ALTER TABLE "system_role_permission" ADD CONSTRAINT "system_role_permission_perm
 ALTER TABLE "system_dictionary_trans" ADD CONSTRAINT "system_dictionary_trans_dictionary_id_fkey" FOREIGN KEY ("dictionary_id") REFERENCES "system_dictionary"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "system_dictionary_item" ADD CONSTRAINT "system_dictionary_item_dictionary_id_fkey" FOREIGN KEY ("dictionary_id") REFERENCES "system_dictionary"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "system_dictionary_data" ADD CONSTRAINT "system_dictionary_data_dictionary_id_fkey" FOREIGN KEY ("dictionary_id") REFERENCES "system_dictionary"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "system_dictionary_kv_trans" ADD CONSTRAINT "system_dictionary_kv_trans_dictionary_kv_id_fkey" FOREIGN KEY ("dictionary_kv_id") REFERENCES "system_dictionary_item"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "system_dictionary_data_trans" ADD CONSTRAINT "system_dictionary_data_trans_dictionary_kv_id_fkey" FOREIGN KEY ("dictionary_kv_id") REFERENCES "system_dictionary_data"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "system_setting_trans" ADD CONSTRAINT "system_setting_trans_setting_id_fkey" FOREIGN KEY ("setting_id") REFERENCES "system_setting"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
