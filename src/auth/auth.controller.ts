@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   Inject,
+  ParseEnumPipe,
   Post,
   Query
 } from '@nestjs/common'
@@ -12,7 +13,6 @@ import {
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiNotImplementedResponse,
-  ApiOkResponse,
   ApiOperation,
   ApiQuery,
   ApiTags,
@@ -20,6 +20,7 @@ import {
 } from '@nestjs/swagger'
 
 import { LoginType } from '@/common'
+import { ApiOkBaseResponse } from '@/common/decorators'
 
 import { AuthService } from './auth.service'
 import { LoginDto } from './dto'
@@ -42,7 +43,7 @@ export class AuthController {
   }
 
   @ApiOperation({ summary: '登录' })
-  @ApiOkResponse({ description: '登录成功', type: LoginVo })
+  @ApiOkBaseResponse({ description: '登录成功', type: LoginVo })
   @ApiBadRequestResponse({ description: '用户名或密码不正确' })
   @ApiUnauthorizedResponse({ description: '认证失败' })
   @ApiNotImplementedResponse({ description: '不支持该登录方式' })
@@ -75,7 +76,16 @@ export class AuthController {
     }
   })
   @Post('login')
-  login(@Query('type') type: LoginType, @Body() loginDto: LoginDto) {
+  login(
+    @Query(
+      'type',
+      new ParseEnumPipe(LoginType, {
+        exceptionFactory: () => new BadRequestException('不支持该登录方式')
+      })
+    )
+    type: LoginType,
+    @Body() loginDto: LoginDto
+  ) {
     if (!type) {
       return new BadRequestException('Missing login type')
     }
@@ -83,8 +93,9 @@ export class AuthController {
       case LoginType.username:
         return this.authService.loginByUsername(loginDto)
       case LoginType.email:
+        return this.authService.loginByEmail(loginDto)
       default:
-        throw new BadRequestException(`Invalid login type: ${type}`)
+        return new BadRequestException('不支持该登录方式')
     }
   }
 }

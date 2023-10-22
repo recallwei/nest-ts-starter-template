@@ -1,8 +1,10 @@
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger'
 import { Exclude } from 'class-transformer'
 
-export class UserVo {
-  @ApiProperty({ description: '用户ID' })
+import { BaseResourceVo } from '@/common'
+
+export class UserVo extends BaseResourceVo {
+  @ApiProperty({ description: '用户 ID' })
   id: number
 
   @ApiProperty({ description: '用户名' })
@@ -75,4 +77,7 @@ export class UserVo {
 
   @ApiProperty({ description: '是否内置' })
   builtIn: boolean
+
+  @ApiProperty({ description: '认证 ID' })
+  authId: number
 }

@@ -7,7 +7,7 @@ import {
 import { Prisma } from '@prisma/client'
 import { plainToClass, plainToInstance } from 'class-transformer'
 
-import { OkResponse } from '@/common'
+import { OkResponseVo } from '@/common'
 import { PrismaService } from '@/prisma/prisma.service'
 
 import type { CreateUserDto } from './dto/create-user.dto'
@@ -25,7 +25,7 @@ export class UsersService {
         data: createUserDto
       })
       const userVo = plainToClass(UserVo, user)
-      return new OkResponse<UserVo>({
+      return new OkResponseVo<UserVo>({
         data: userVo
       })
     } catch (err) {
@@ -44,7 +44,7 @@ export class UsersService {
   async findMany() {
     const users = await this.prismaService.user.findMany()
     const userVoList = plainToInstance(UserVo, users)
-    return new OkResponse<UserVo[]>({
+    return new OkResponseVo<UserVo[]>({
       data: userVoList
     })
   }
@@ -59,7 +59,7 @@ export class UsersService {
       throw new NotFoundException('用户不存在')
     }
     const userVo = plainToClass(UserVo, user)
-    return new OkResponse<UserVo>({
+    return new OkResponseVo<UserVo>({
       data: userVo
     })
   }
@@ -74,7 +74,7 @@ export class UsersService {
       throw new NotFoundException('用户不存在')
     }
     const userVo = plainToClass(UserVo, user)
-    return new OkResponse<UserVo>({
+    return new OkResponseVo<UserVo>({
       data: userVo
     })
   }
@@ -85,5 +85,17 @@ export class UsersService {
 
   remove(id: number) {
     return `This action removes a #${id} user`
+  }
+
+  async alreadyExists(username: string) {
+    const user = await this.prismaService.user.findUnique({
+      where: {
+        username
+      }
+    })
+    return {
+      user,
+      exists: !!user
+    }
   }
 }

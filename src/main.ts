@@ -37,7 +37,7 @@ async function bootstrap() {
       whitelist: true, // 自动删除非 dto 中的属性
       transform: true, // 自动转换类型
       transformOptions: {
-        enableImplicitConversion: true // 允许隐式转换,
+        enableImplicitConversion: true // 允许隐式转换
       },
       // disableErrorMessages: true, // 禁用错误消息
       stopAtFirstError: true
