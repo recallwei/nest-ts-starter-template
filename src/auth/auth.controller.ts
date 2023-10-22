@@ -64,6 +64,13 @@ export class AuthController {
           password: '123456'
         },
         description: '测试超级管理员登录'
+      },
+      visitor: {
+        value: {
+          username: 'visitor',
+          password: '123456'
+        },
+        description: '测试访客登录'
       }
     }
   })

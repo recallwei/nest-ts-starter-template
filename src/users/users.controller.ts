@@ -87,7 +87,10 @@ export class UsersController {
   @ApiParam({ name: 'id', description: '用户 ID', required: true })
   @ApiBody({ description: '用户信息', type: UpdateUserDto })
   @Patch(':id')
-  update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateUserDto: UpdateUserDto
+  ) {
     return this.usersService.update(id, updateUserDto)
   }
 
@@ -98,7 +101,7 @@ export class UsersController {
   @ApiNotFoundResponse({ description: '用户不存在' })
   @ApiParam({ name: 'id', description: '用户 ID', required: true })
   @Delete(':id')
-  remove(@Param('id') id: number) {
+  remove(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.remove(id)
   }
 }

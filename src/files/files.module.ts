@@ -3,8 +3,7 @@ import { MulterModule } from '@nestjs/platform-express'
 import { diskStorage } from 'multer'
 import { extname } from 'path'
 
-import { fileExtensionMap, MAX_UPLOAD_FILE_SIZE } from '@/common'
-import { uuid } from '@/utils'
+import { fileExtensionMap, MAX_UPLOAD_FILE_SIZE, uuid } from '@/common'
 
 import { FilesController } from './files.controller'
 import { FilesService } from './files.service'
@@ -31,7 +30,6 @@ import { FilesService } from './files.service'
           callback(null, true)
         } else {
           callback(
-            // TODO: i18n
             new UnprocessableEntityException('无法处理的文件类型'),
             false
           )

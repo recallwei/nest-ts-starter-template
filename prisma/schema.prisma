@@ -356,7 +356,7 @@ model DictionaryKV {
   /// 删除人
   deletedBy Int?      @map("deleted_by")
 
-  @@map("system_dictionary_item")
+  @@map("system_dictionary_data")
 }
 
 // 字典键值对 - 翻译
@@ -389,7 +389,7 @@ model DictionaryKVTrans {
   deletedBy Int?      @map("deleted_by")
 
   @@unique([dictionaryKVId, lang])
-  @@map("system_dictionary_kv_trans")
+  @@map("system_dictionary_data_trans")
 }
 
 /// 参数

@@ -8,7 +8,7 @@ export class UserVo {
   @ApiProperty({ description: '用户名' })
   username: string
 
-  @ApiProperty({ description: '密码' })
+  // 密码
   @ApiHideProperty()
   @Exclude()
   password: string
