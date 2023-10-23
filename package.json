@@ -3,11 +3,11 @@
   "description": "",
   "author": "",
   "scripts": {
-    "dev": "nest start --watch",
+    "dev": "nest start --watch -- -b swc",
     "dev:docker": "docker-compose up -d && pnpm start:dev",
     "dev:pm2": "pnpm pm2 start ecosystem.config.js --env development",
-    "debug": "nest start --debug --watch",
-    "start": "nest start",
+    "debug": "nest start --debug --watch -- -b swc",
+    "start": "nest start -- -b swc",
     "prod": "node dist/main",
     "prod:pm2": "pnpm pm2 reload ecosystem.config.js --env production",
     "build": "nest build",
@@ -43,6 +43,7 @@
     "@prisma/client": "5.4.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
+    "multer": "1.4.5-lts.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
     "uuid": "^9.0.1"
