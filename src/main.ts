@@ -1,3 +1,5 @@
+import { join } from 'node:path'
+
 import {
   ClassSerializerInterceptor,
   ValidationPipe,
@@ -15,7 +17,7 @@ async function bootstrap() {
   })
 
   // 全局前缀 - 如果没有子域名，可以设置全局前置
-  app.setGlobalPrefix('/api')
+  app.setGlobalPrefix('/')
 
   // 启用版本控制
   app.enableVersioning({ type: VersioningType.URI })
@@ -52,8 +54,16 @@ async function bootstrap() {
    * 用作上传文件的存储目录
    * 例如：http://localhost:3000/storage/xxx.png
    */
-  app.useStaticAssets('public', { prefix: '/static' })
-  app.useStaticAssets('uploads', { prefix: '/uploads' })
+  app.useStaticAssets(join(__dirname, '..', 'public'), { prefix: '/' })
+  app.useStaticAssets(join(__dirname, '..', 'uploads'), { prefix: '/uploads' })
+
+  /**
+   * 视图目录
+   * 例如：http://localhost:3000/views/xxx.pug
+   */
+  app.setBaseViewsDir(join(__dirname, '..', 'views'))
+  // 视图引擎，使用 pug
+  app.setViewEngine('pug')
 
   // Swagger 配置
   const config = new DocumentBuilder()

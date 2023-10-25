@@ -1,4 +1,4 @@
-import { Controller, Get, Inject } from '@nestjs/common'
+import { Controller, Get, Inject, Redirect, Render } from '@nestjs/common'
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
 
 import { AppService } from './app.service'
@@ -9,17 +9,24 @@ export class AppController {
   @Inject(AppService)
   private readonly appService: AppService
 
-  @ApiOperation({ summary: '应用信息' })
-  @ApiOkResponse({ description: '请求成功', type: String })
+  @ApiOperation({ summary: '应用首页' })
+  @ApiOkResponse({ description: '请求成功' })
+  @Render('index')
   @Get()
-  getApp(): string {
-    return this.appService.getApp()
+  getApp() {
+    return { title: 'Nest TypeScript Starter Template' }
   }
 
-  @ApiOperation({ summary: '应用版本' })
-  @ApiOkResponse({ description: '请求成功', type: String })
+  @ApiOperation({ summary: '应用信息' })
+  @ApiOkResponse({ description: '请求成功' })
   @Get('version')
-  getVersion(): string {
-    return this.appService.getVersion()
+  getVersion() {
+    return this.appService.getAppInfo()
   }
+
+  @ApiOperation({ summary: '测试重定向' })
+  @ApiOkResponse({ description: '请求成功' })
+  @Redirect('/')
+  @Get('redirect')
+  getRedirect() {}
 }

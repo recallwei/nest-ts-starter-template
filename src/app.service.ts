@@ -2,11 +2,10 @@ import { Injectable } from '@nestjs/common'
 
 @Injectable()
 export class AppService {
-  getApp(): string {
-    return 'Welcome to Nest.js TypeScript Starter Template!'
-  }
-
-  getVersion(): string {
-    return '1.0.0'
+  getAppInfo() {
+    return {
+      name: 'Nest TypeScript Starter Template',
+      version: '1.0.0'
+    }
   }
 }
