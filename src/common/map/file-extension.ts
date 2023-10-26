@@ -15,13 +15,10 @@ export const fileExtensionMap = new Map([
     '.docx'
   ],
   ['application/vnd.ms-excel', '.xls'],
-  [
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    '.xlsx'
-  ],
+  ['application/vnd.openxmlformats-officedocument.spreadsheet.sheet', '.xlsx'],
   ['application/vnd.ms-powerpoint', '.ppt'],
   [
-    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    'application/vnd.openxmlformats-officedocument.presentational.presentation',
     '.pptx'
   ],
   ['application/zip', '.zip']
