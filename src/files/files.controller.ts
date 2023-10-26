@@ -20,6 +20,7 @@ import {
   ApiTags,
   ApiUnprocessableEntityResponse
 } from '@nestjs/swagger'
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { Response } from 'express'
 
 import { STORAGE_DIR } from '@/common'

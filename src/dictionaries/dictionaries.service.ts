@@ -6,7 +6,7 @@ import type { UpdateDictionaryDto } from './dto/update-dictionary.dto'
 @Injectable()
 export class DictionariesService {
   create(createDictionaryDto: CreateDictionaryDto) {
-    return 'This action adds a new dictionary'
+    return createDictionaryDto
   }
 
   findMany() {
@@ -17,8 +17,8 @@ export class DictionariesService {
     return `This action returns a #${id} dictionary`
   }
 
-  update(id: number, updateDictionaryDto: UpdateDictionaryDto) {
-    return `This action updates a #${id} dictionary`
+  update(_id: number, updateDictionaryDto: UpdateDictionaryDto) {
+    return updateDictionaryDto
   }
 
   remove(id: number) {
