@@ -3,11 +3,13 @@ import {
   Controller,
   Delete,
   Get,
-  Inject,
+  NotFoundException,
   Param,
-  ParseIntPipe,
   Patch,
-  Post
+  Post,
+  Query,
+  Req,
+  UnauthorizedException
 } from '@nestjs/common'
 import {
   ApiBadRequestResponse,
@@ -19,21 +21,25 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
-  ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse
 } from '@nestjs/swagger'
+import { plainToClass } from 'class-transformer'
+
+import { OkResponseVo, PageDateDto } from '@/common'
+import { ApiPageQuery } from '@/common/decorators'
+import { CustomRequest } from '@/common/interfaces'
 
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 import { UsersService } from './users.service'
+import { UserVo } from './vo'
 
 @ApiTags('用户')
 @ApiBearerAuth('bearer')
 @Controller('users')
 export class UsersController {
-  @Inject(UsersService)
-  private readonly usersService: UsersService
+  constructor(private readonly usersService: UsersService) {}
 
   @ApiOperation({ summary: '创建用户' })
   @ApiCreatedResponse({ description: '创建成功' })
@@ -49,24 +55,31 @@ export class UsersController {
   @ApiOperation({ summary: '用户列表' })
   @ApiOkResponse({ description: '请求成功' })
   @ApiUnauthorizedResponse({ description: '认证失败' })
-  @ApiQuery({ name: 'page', description: '页码', required: true, example: 1 })
-  @ApiQuery({
-    name: 'pageSize',
-    description: '每页条数',
-    required: true,
-    example: 10
-  })
+  @ApiPageQuery('searchText', 'date')
   @Get()
-  findMany() {
-    return this.usersService.findMany()
+  async findMany(@Query() pageDto: PageDateDto) {
+    const userVoList = await this.usersService.findMany(pageDto)
+    return new OkResponseVo<UserVo[]>({
+      data: userVoList
+    })
   }
 
-  @ApiOperation({ summary: '当前用户' })
+  @ApiOperation({ summary: '个人信息' })
   @ApiOkResponse({ description: '请求成功' })
   @ApiUnauthorizedResponse({ description: '认证失败' })
-  @Get('info')
-  findCurrent() {
-    return this.usersService.findCurrent()
+  @ApiNotFoundResponse({ description: '用户不存在' })
+  @Get('me')
+  async findCurrent(@Req() req: CustomRequest) {
+    if (!req.user) {
+      throw new UnauthorizedException('认证失败')
+    }
+    const user = await this.usersService.findOneById(req.user.sub)
+    if (!user) {
+      throw new NotFoundException('用户不存在')
+    }
+    return new OkResponseVo<UserVo>({
+      data: plainToClass(UserVo, user)
+    })
   }
 
   @ApiOperation({ summary: '用户详情' })
@@ -74,9 +87,15 @@ export class UsersController {
   @ApiUnauthorizedResponse({ description: '认证失败' })
   @ApiNotFoundResponse({ description: '用户不存在' })
   @ApiParam({ name: 'id', description: '用户 ID', required: true, example: 1 })
-  @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.findOneById(id)
+  @Get(':id(\\d+)')
+  async findOne(@Param('id') id: number) {
+    const user = await this.usersService.findOneById(id)
+    if (!user) {
+      throw new NotFoundException('用户不存在')
+    }
+    return new OkResponseVo<UserVo>({
+      data: plainToClass(UserVo, user)
+    })
   }
 
   @ApiOperation({ summary: '修改用户' })
@@ -86,11 +105,8 @@ export class UsersController {
   @ApiNotFoundResponse({ description: '用户不存在' })
   @ApiParam({ name: 'id', description: '用户 ID', required: true })
   @ApiBody({ description: '用户信息', type: UpdateUserDto })
-  @Patch(':id')
-  update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() updateUserDto: UpdateUserDto
-  ) {
+  @Patch(':id(\\d+)')
+  update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto)
   }
 
@@ -100,8 +116,8 @@ export class UsersController {
   @ApiBadRequestResponse({ description: '参数错误' })
   @ApiNotFoundResponse({ description: '用户不存在' })
   @ApiParam({ name: 'id', description: '用户 ID', required: true })
-  @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
+  @Delete(':id(\\d+)')
+  remove(@Param('id') id: number) {
     return this.usersService.remove(id)
   }
 }

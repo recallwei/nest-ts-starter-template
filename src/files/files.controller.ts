@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  Inject,
   Param,
   Post,
   Res,
@@ -20,7 +19,6 @@ import {
   ApiTags,
   ApiUnprocessableEntityResponse
 } from '@nestjs/swagger'
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { Response } from 'express'
 
 import { STORAGE_DIR } from '@/common'
@@ -32,8 +30,7 @@ import { FileVo } from './vo'
 @ApiBearerAuth('bearer')
 @Controller('files')
 export class FilesController {
-  @Inject(FilesService)
-  private readonly filesService: FilesService
+  constructor(private readonly filesService: FilesService) {}
 
   @ApiOperation({ summary: '上传文件' })
   @ApiConsumes('multipart/form-data')
@@ -61,5 +58,19 @@ export class FilesController {
   @Get(':path')
   findOne(@Param('path') path: string, @Res() res: Response) {
     return res.sendFile(path, { root: STORAGE_DIR })
+  }
+
+  @ApiOperation({ summary: '上传文件 (腾讯云COS)' })
+  @ApiConsumes('multipart/form-data')
+  @ApiCreatedResponse({ description: '上传成功', type: FileVo, isArray: true })
+  @ApiBadRequestResponse({ description: '文件为空' })
+  @ApiUnprocessableEntityResponse({
+    description: '文件大于 5MB | 文件类型不支持'
+  })
+  @ApiBody({ description: '上传的文件' })
+  @UseInterceptors(AnyFilesInterceptor())
+  @Post('cos')
+  uploadToCos(@UploadedFiles() files: Express.Multer.File[]) {
+    return this.filesService.uploadToCos(files)
   }
 }

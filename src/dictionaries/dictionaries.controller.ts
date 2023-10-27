@@ -3,10 +3,10 @@ import {
   Controller,
   Delete,
   Get,
-  Inject,
   Param,
   Patch,
-  Post
+  Post,
+  Query
 } from '@nestjs/common'
 import {
   ApiBadRequestResponse,
@@ -20,6 +20,9 @@ import {
   ApiUnauthorizedResponse
 } from '@nestjs/swagger'
 
+import { PageDateDto } from '@/common'
+import { ApiPageQuery } from '@/common/decorators'
+
 import { DictionariesService } from './dictionaries.service'
 import { CreateDictionaryDto } from './dto/create-dictionary.dto'
 import { UpdateDictionaryDto } from './dto/update-dictionary.dto'
@@ -27,8 +30,7 @@ import { UpdateDictionaryDto } from './dto/update-dictionary.dto'
 @ApiTags('数据字典')
 @Controller('dictionaries')
 export class DictionariesController {
-  @Inject(DictionariesService)
-  private readonly dictionariesService: DictionariesService
+  constructor(private readonly dictionariesService: DictionariesService) {}
 
   @ApiOperation({ summary: '创建字典' })
   @ApiCreatedResponse({ description: '创建成功' })
@@ -43,16 +45,17 @@ export class DictionariesController {
   @ApiOperation({ summary: '字典列表' })
   @ApiOkResponse({ description: '请求成功' })
   @ApiUnauthorizedResponse({ description: '认证失败' })
+  @ApiPageQuery('searchText', 'date')
   @Get()
-  findMany() {
-    return this.dictionariesService.findMany()
+  findMany(@Query() pageDto: PageDateDto) {
+    return this.dictionariesService.findMany(pageDto)
   }
 
   @ApiOperation({ summary: '字典详情' })
   @ApiOkResponse({ description: '请求成功' })
   @ApiUnauthorizedResponse({ description: '认证失败' })
   @ApiNotFoundResponse({ description: '字典不存在' })
-  @Get(':id')
+  @Get(':id(\\d+)')
   findOne(@Param('id') id: number) {
     return this.dictionariesService.findOne(id)
   }
@@ -63,7 +66,7 @@ export class DictionariesController {
   @ApiBadRequestResponse({ description: '参数错误' })
   @ApiNotFoundResponse({ description: '字典不存在' })
   @ApiParam({ name: 'id', description: '字典 ID', required: true, example: 1 })
-  @Patch(':id')
+  @Patch(':id(\\d+)')
   update(
     @Param('id') id: number,
     @Body() updateDictionaryDto: UpdateDictionaryDto
@@ -77,7 +80,7 @@ export class DictionariesController {
   @ApiBadRequestResponse({ description: '参数错误' })
   @ApiNotFoundResponse({ description: '字典不存在' })
   @ApiParam({ name: 'id', description: '字典 ID', required: true, example: 1 })
-  @Delete(':id')
+  @Delete(':id(\\d+)')
   remove(@Param('id') id: number) {
     return this.dictionariesService.remove(id)
   }

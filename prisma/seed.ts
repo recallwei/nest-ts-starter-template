@@ -4,7 +4,7 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
-const SEED_SUPER_ADMIN_USERNAME = 'SuperAdmin'
+const SEED_SUPER_ADMIN_USERNAME = 'admin'
 const SEED_SUPER_ADMIN_PASSWORD = '123456'
 
 async function main() {

@@ -9,7 +9,7 @@ export class LoginVo {
   @ApiProperty({ description: '访问令牌' })
   accessToken: string
 
-  constructor(partial: Partial<LoginVo>) {
-    Object.assign(this, partial)
+  constructor(loginVo?: Partial<LoginVo>) {
+    Object.assign(this, loginVo)
   }
 }

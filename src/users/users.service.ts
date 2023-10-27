@@ -1,12 +1,8 @@
-import {
-  ConflictException,
-  Inject,
-  Injectable,
-  NotFoundException
-} from '@nestjs/common'
+import { ConflictException, Injectable } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { plainToClass, plainToInstance } from 'class-transformer'
 
+import type { PageDateDto } from '@/common'
 import { OkResponseVo } from '@/common'
 import { PrismaService } from '@/prisma/prisma.service'
 
@@ -16,8 +12,7 @@ import { UserVo } from './vo'
 
 @Injectable()
 export class UsersService {
-  @Inject(PrismaService)
-  private readonly prismaService: PrismaService
+  constructor(private readonly prismaService: PrismaService) {}
 
   async create(createUserDto: CreateUserDto) {
     try {
@@ -41,41 +36,27 @@ export class UsersService {
     }
   }
 
-  async findMany() {
+  async findMany(pageDateDto: PageDateDto): Promise<UserVo[]> {
+    const { page, pageSize, searchText, startTime, endTime } = pageDateDto
+    console.log(page, pageSize, searchText, startTime, endTime)
     const users = await this.prismaService.user.findMany()
     const userVoList = plainToInstance(UserVo, users)
-    return new OkResponseVo<UserVo[]>({
-      data: userVoList
-    })
+    return userVoList
   }
 
-  async findOneById(id: number) {
-    const user = await this.prismaService.user.findUnique({
+  findOneById(id: number) {
+    return this.prismaService.user.findUnique({
       where: {
         id
       }
     })
-    if (!user) {
-      throw new NotFoundException('用户不存在')
-    }
-    const userVo = plainToClass(UserVo, user)
-    return new OkResponseVo<UserVo>({
-      data: userVo
-    })
   }
 
-  async findCurrent() {
-    const user = await this.prismaService.user.findUnique({
+  findOneByUsername(username: string) {
+    return this.prismaService.user.findUnique({
       where: {
-        id: 1
+        username
       }
-    })
-    if (!user) {
-      throw new NotFoundException('用户不存在')
-    }
-    const userVo = plainToClass(UserVo, user)
-    return new OkResponseVo<UserVo>({
-      data: userVo
     })
   }
 
@@ -85,17 +66,5 @@ export class UsersService {
 
   remove(id: number) {
     return `This action removes a #${id} user`
-  }
-
-  async alreadyExists(username: string) {
-    const user = await this.prismaService.user.findUnique({
-      where: {
-        username
-      }
-    })
-    return {
-      user,
-      exists: !!user
-    }
   }
 }

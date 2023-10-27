@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common'
 
+import { type PageDateDto } from '@/common'
+
 import type { CreateDictionaryDto } from './dto/create-dictionary.dto'
 import type { UpdateDictionaryDto } from './dto/update-dictionary.dto'
 
@@ -9,8 +11,9 @@ export class DictionariesService {
     return createDictionaryDto
   }
 
-  findMany() {
-    return 'This action returns all dictionaries'
+  findMany(pageDateDto: PageDateDto) {
+    const { page, pageSize, searchText, startTime, endTime } = pageDateDto
+    console.log(page, pageSize, searchText, startTime, endTime)
   }
 
   findOne(id: number) {

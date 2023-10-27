@@ -2,7 +2,6 @@ import {
   BadRequestException,
   Body,
   Controller,
-  Inject,
   ParseEnumPipe,
   Post,
   Query
@@ -18,19 +17,23 @@ import {
   ApiTags,
   ApiUnauthorizedResponse
 } from '@nestjs/swagger'
+import type { User } from '@prisma/client'
+import { plainToClass } from 'class-transformer'
 
-import { LoginType } from '@/common'
-import { ApiOkBaseResponse } from '@/common/decorators'
+import { OkResponseVo } from '@/common'
+import { ApiOkBaseResponse, SkipAuth } from '@/common/decorators'
+import { UserVo } from '@/users/vo'
 
 import { AuthService } from './auth.service'
 import { LoginDto } from './dto'
+import { LoginType } from './enum'
 import { LoginVo } from './vo'
 
 @ApiTags('认证')
+@SkipAuth()
 @Controller('auth')
 export class AuthController {
-  @Inject(AuthService)
-  private readonly authService: AuthService
+  constructor(private readonly authService: AuthService) {}
 
   @ApiOperation({ summary: '注册' })
   @ApiCreatedResponse({ description: '注册成功' })
@@ -76,7 +79,7 @@ export class AuthController {
     }
   })
   @Post('login')
-  login(
+  async login(
     @Query(
       'type',
       new ParseEnumPipe(LoginType, {
@@ -86,16 +89,26 @@ export class AuthController {
     type: LoginType,
     @Body() loginDto: LoginDto
   ) {
-    if (!type) {
-      return new BadRequestException('Missing login type')
-    }
+    let user: User
+
     switch (type) {
+      // 用户名登录
       case LoginType.username:
-        return this.authService.loginByUsername(loginDto)
+        user = await this.authService.loginByUsername(loginDto)
+        break
+      // 邮箱登录
       case LoginType.email:
         return this.authService.loginByEmail(loginDto)
       default:
         return new BadRequestException('不支持该登录方式')
     }
+
+    return new OkResponseVo({
+      data: new LoginVo({
+        user: plainToClass(UserVo, user),
+        accessToken: this.authService.generateToken(user)
+      }),
+      message: '登录成功'
+    })
   }
 }
