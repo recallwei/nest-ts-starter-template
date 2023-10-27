@@ -1,14 +1,22 @@
 import { Module } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
+import { APP_INTERCEPTOR } from '@nestjs/core'
 import Joi from 'joi'
 
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { AuthModule } from './auth/auth.module'
+import {
+  ErrorsInterceptor,
+  LoggingInterceptor,
+  TimeoutInterceptor
+} from './common'
 import { CosModule } from './cos/cos.module'
 import { DictionariesModule } from './dictionaries/dictionaries.module'
 import { FilesModule } from './files/files.module'
+import { PermissionsModule } from './permissions/permissions.module'
 import { PrismaModule } from './prisma/prisma.module'
+import { RolesModule } from './roles/roles.module'
 import { UsersModule } from './users/users.module'
 
 @Module({
@@ -25,11 +33,27 @@ import { UsersModule } from './users/users.module'
     PrismaModule,
     AuthModule,
     UsersModule,
+    RolesModule,
+    PermissionsModule,
     DictionariesModule,
     FilesModule,
     CosModule
   ],
   controllers: [AppController],
-  providers: [AppService]
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ErrorsInterceptor
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: TimeoutInterceptor
+    }
+  ]
 })
 export class AppModule {}

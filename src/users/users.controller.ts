@@ -8,7 +8,6 @@ import {
   Patch,
   Post,
   Query,
-  Req,
   UnauthorizedException
 } from '@nestjs/common'
 import {
@@ -26,9 +25,8 @@ import {
 } from '@nestjs/swagger'
 import { plainToClass } from 'class-transformer'
 
-import { OkResponseVo, PageDateDto } from '@/common'
-import { ApiPageQuery } from '@/common/decorators'
-import { CustomRequest } from '@/common/interfaces'
+import { JWTPayload } from '@/auth/interfaces'
+import { ApiPageQuery, OkResponseVo, PageDateDto, User } from '@/common'
 
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
@@ -69,16 +67,16 @@ export class UsersController {
   @ApiUnauthorizedResponse({ description: '认证失败' })
   @ApiNotFoundResponse({ description: '用户不存在' })
   @Get('me')
-  async findCurrent(@Req() req: CustomRequest) {
-    if (!req.user) {
+  async findCurrent(@User() user: JWTPayload) {
+    if (!user) {
       throw new UnauthorizedException('认证失败')
     }
-    const user = await this.usersService.findOneById(req.user.sub)
-    if (!user) {
+    const currentUser = await this.usersService.findOneById(user.sub)
+    if (!currentUser) {
       throw new NotFoundException('用户不存在')
     }
     return new OkResponseVo<UserVo>({
-      data: plainToClass(UserVo, user)
+      data: plainToClass(UserVo, currentUser)
     })
   }
 

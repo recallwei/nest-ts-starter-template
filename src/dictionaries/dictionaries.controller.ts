@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common'
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiNotFoundResponse,
@@ -20,14 +21,14 @@ import {
   ApiUnauthorizedResponse
 } from '@nestjs/swagger'
 
-import { PageDateDto } from '@/common'
-import { ApiPageQuery } from '@/common/decorators'
+import { ApiPageQuery, PageDateDto } from '@/common'
 
 import { DictionariesService } from './dictionaries.service'
 import { CreateDictionaryDto } from './dto/create-dictionary.dto'
 import { UpdateDictionaryDto } from './dto/update-dictionary.dto'
 
 @ApiTags('数据字典')
+@ApiBearerAuth('bearer')
 @Controller('dictionaries')
 export class DictionariesController {
   constructor(private readonly dictionariesService: DictionariesService) {}

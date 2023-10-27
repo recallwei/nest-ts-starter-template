@@ -17,6 +17,8 @@
     ],
     "tsConfigPath": "tsconfig.build.json",
     "webpackConfigPath": "webpack.config.js",
-    "deleteOutDir": true
+    "deleteOutDir": true,
+    "builder": "swc",
+    "typeCheck": true
   }
 }

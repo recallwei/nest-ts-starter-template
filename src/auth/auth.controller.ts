@@ -20,8 +20,7 @@ import {
 import type { User } from '@prisma/client'
 import { plainToClass } from 'class-transformer'
 
-import { OkResponseVo } from '@/common'
-import { ApiOkBaseResponse, SkipAuth } from '@/common/decorators'
+import { ApiOkBaseResponse, OkResponseVo, SkipAuth } from '@/common'
 import { UserVo } from '@/users/vo'
 
 import { AuthService } from './auth.service'
