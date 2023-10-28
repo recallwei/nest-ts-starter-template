@@ -5,12 +5,12 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch via PNPM",
+      "name": "Debug Nest",
+      "type": "node",
       "request": "launch",
-      "runtimeArgs": ["run", "debug"],
-      "runtimeExecutable": "pnpm",
-      "skipFiles": ["<node_internals>/**"],
-      "type": "node"
+      "runtimeExecutable": "nest",
+      "args": ["start", "--watch"],
+      "skipFiles": ["<node_internals>/**"]
     }
   ]
 }

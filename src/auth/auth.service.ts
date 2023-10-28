@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
-import { compareSync, hashSync } from '@node-rs/bcrypt'
+import { compare } from '@node-rs/bcrypt'
 import type { User } from '@prisma/client'
 
 import { PrismaService } from '@/prisma/prisma.service'
@@ -37,7 +37,7 @@ export class AuthService {
       throw new BadRequestException('用户名不存在')
     }
 
-    if (compareSync(hashSync(loginDto.password), user.password)) {
+    if (!(await compare(loginDto.password, user.password))) {
       throw new BadRequestException('用户名或密码不正确')
     }
 
