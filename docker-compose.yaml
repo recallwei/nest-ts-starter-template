@@ -7,4 +7,4 @@ services:
     ports:
       - 5433:5432
     env_file:
-      - .env.development.local
+      - .env

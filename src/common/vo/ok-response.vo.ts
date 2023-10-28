@@ -1,4 +1,3 @@
-import { HttpStatus } from '@nestjs/common'
 import { ApiProperty } from '@nestjs/swagger'
 
 import { BaseResponseVo } from './base-response.vo'
@@ -11,8 +10,7 @@ export class OkResponseVo<T> extends BaseResponseVo {
     const { code, message = '请求成功', data } = okResponseVo ?? {}
     super({
       code,
-      message,
-      statusCode: HttpStatus.OK
+      message
     })
     this.data = data
   }

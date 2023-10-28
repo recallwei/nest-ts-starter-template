@@ -6,11 +6,7 @@ import Joi from 'joi'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { AuthModule } from './auth/auth.module'
-import {
-  ErrorsInterceptor,
-  LoggingInterceptor,
-  TimeoutInterceptor
-} from './common'
+import { LoggingInterceptor, TimeoutInterceptor } from './common'
 import { CosModule } from './cos/cos.module'
 import { DictionariesModule } from './dictionaries/dictionaries.module'
 import { FilesModule } from './files/files.module'
@@ -45,10 +41,6 @@ import { UsersModule } from './users/users.module'
     {
       provide: APP_INTERCEPTOR,
       useClass: LoggingInterceptor
-    },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: ErrorsInterceptor
     },
     {
       provide: APP_INTERCEPTOR,

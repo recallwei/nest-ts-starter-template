@@ -4,7 +4,7 @@
   "author": "Bruce Song <recall4056@gmail.com> (https://github.com/recallwei/)",
   "scripts": {
     "dev": "nest start --watch -- -b swc --type-check",
-    "dev:docker": "docker-compose up -d && pnpm start:dev",
+    "dev:docker": "docker-compose up -d && pnpm dev",
     "dev:pm2": "pnpm pm2 start ecosystem.config.js --env development",
     "debug": "nest start --debug --watch -- -b swc --type-check",
     "start": "nest start -- -b swc --type-check",
