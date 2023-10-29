@@ -17,9 +17,5 @@ describe('AppController (e2e)', () => {
     await app.init()
   })
 
-  it('/ (GET)', () =>
-    request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Welcome to Nest.js TypeScript Starter Template!'))
+  it('/ (GET)', () => request(app.getHttpServer()).get('/').expect(401))
 })
