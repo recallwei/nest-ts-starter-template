@@ -18,9 +18,9 @@ describe('AppController', () => {
 
   describe('root', () => {
     it('should return "App welcome info"', () => {
-      expect(appController.getApp()).toBe(
-        'Welcome to Nest.js TypeScript Starter Template!'
-      )
+      expect(appController.getApp()).toStrictEqual({
+        title: 'Nest TypeScript Starter Template'
+      })
     })
   })
 })

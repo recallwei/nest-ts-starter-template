@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import COS from 'cos-nodejs-sdk-v5'
+import { sep } from 'path'
+
+import { FileVo } from '@/files/vo'
 
 @Injectable()
 export class CosService {
@@ -91,5 +94,32 @@ export class CosService {
         console.log(err ?? data)
       }
     )
+  }
+
+  uploadToCos(files: Express.Multer.File[]): FileVo[] {
+    this.uploadFiles(files)
+    const filesResult =
+      files?.map((file) => {
+        const { fieldname, filename, mimetype, size, originalname } = file
+        const path = file.path.replaceAll(sep, '/')
+        // TODO: 使用日志记录
+        console.log({
+          path,
+          fieldname,
+          filename,
+          originalname,
+          mimetype,
+          size
+        })
+        return new FileVo({
+          path,
+          fieldname,
+          filename,
+          originalname,
+          mimetype,
+          size
+        })
+      }) ?? []
+    return filesResult
   }
 }

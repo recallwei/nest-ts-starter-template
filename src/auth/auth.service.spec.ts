@@ -1,3 +1,4 @@
+import { JwtModule } from '@nestjs/jwt'
 import type { TestingModule } from '@nestjs/testing'
 import { Test } from '@nestjs/testing'
 
@@ -11,7 +12,7 @@ describe('AuthService ', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [UsersModule, PrismaModule],
+      imports: [PrismaModule, UsersModule, JwtModule],
       providers: [AuthService]
     }).compile()
 

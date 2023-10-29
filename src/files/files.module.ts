@@ -4,7 +4,6 @@ import { diskStorage } from 'multer'
 import { extname } from 'path'
 
 import { fileExtensionMap, MAX_UPLOAD_FILE_SIZE, uuid } from '@/common'
-import { CosModule } from '@/cos/cos.module'
 
 import { FilesController } from './files.controller'
 import { FilesService } from './files.service'
@@ -36,8 +35,7 @@ import { FilesService } from './files.service'
           )
         }
       }
-    }),
-    CosModule
+    })
   ],
   controllers: [FilesController],
   providers: [FilesService]
