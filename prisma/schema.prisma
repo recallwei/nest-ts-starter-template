@@ -10,12 +10,12 @@ generator client {
 
 /// 用户
 model User {
-  /// ID
+  /// 唯一标识
   id          Int       @id @default(autoincrement())
   /// 用户名
   username    String    @unique @db.VarChar(30)
   /// 昵称
-  nickName    String    @map("nick_name") @db.VarChar(50)
+  nickName    String?   @map("nick_name") @db.VarChar(50)
   /// 密码
   password    String?   @db.VarChar(100)
   /// 邮箱
@@ -41,60 +41,58 @@ model User {
   /// 地址
   address     String?   @db.VarChar(100)
   /// 个人简介
-  biography   String?   @db.VarChar(255)
+  biography   String?   @db.VarChar(500)
   /// 个人网站
-  website     String?   @db.VarChar(255)
+  website     String?   @db.VarChar(50)
   /// 个人主页
-  profile     String?   @db.VarChar(100)
+  profile     String?   @db.VarChar(50)
   /// 出生日期
   birthDate   DateTime? @map("birth_date") @db.Date
-  /// 用户 IP
-  ip          String?   @db.VarChar(50)
-  /// 上次登录时间
-  lastLoginAt DateTime? @map("last_login_at") @db.Timestamptz(3)
   /// 是否启用
   enabled     Boolean   @default(true)
   /// 是否内置
   builtIn     Boolean   @default(false) @map("built_in")
 
-  auths Auth[]
-
-  userPosition UserPosition[]
-
-  settings Setting[]
-
-  userTraffics UserTraffic[]
-
-  Notification Notification[]
-
-  loginLogs LoginLog[]
-
+  /// 用户 - 认证
+  auths         Auth[]
+  /// 用户 - 角色
+  userRoles     UserRole[]
+  /// 用户 - 部门
+  userPositions UserPosition[]
+  /// 设置
+  settings      Setting[]
+  /// 系统通知
+  notifications Notification[]
+  /// 用户流量记录
+  userTraffics  UserTraffic[]
+  /// 登录日志
+  loginLogs     LoginLog[]
+  /// 操作日志
   operationLogs OperationLog[]
 
   /// 创建时间
-  createdAt DateTime?  @default(now()) @map("created_at") @db.Timestamptz(3)
+  createdAt DateTime? @default(now()) @map("created_at") @db.Timestamptz(3)
   /// 创建人
-  createdBy Int?       @map("created_by")
+  createdBy Int?      @map("created_by")
   /// 更新时间
-  updatedAt DateTime?  @updatedAt @map("updated_at") @db.Timestamptz(3)
+  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz(3)
   /// 更新人
-  updatedBy Int?       @map("updated_by")
+  updatedBy Int?      @map("updated_by")
   /// 删除时间
-  deletedAt DateTime?  @map("deleted_at") @db.Timestamptz(3)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(3)
   /// 删除人
-  deletedBy Int?       @map("deleted_by")
-  UserRole  UserRole[]
+  deletedBy Int?      @map("deleted_by")
 
   @@map("system_user")
 }
 
 /// 认证
 model Auth {
-  /// ID
+  /// 唯一标识
   id       Int      @id @default(autoincrement())
   /// 认证类型
   authType AuthType @map("auth_type")
-  /// 开放 ID
+  /// 认证唯一标识
   openId   String   @map("open_id") @db.VarChar(50)
   /// Token
   token    String?  @map("token") @db.VarChar(255)
@@ -125,7 +123,7 @@ model Auth {
 
 /// 角色
 model Role {
-  /// ID
+  /// 唯一标识
   id        Int     @id @default(autoincrement())
   /// 角色编码
   code      String  @unique @db.VarChar(50)
@@ -136,13 +134,14 @@ model Role {
   /// 排序
   sortOrder Int?    @default(0) @map("sort_order")
 
-  userRoles UserRole[]
-
-  roleMenuItems RoleMenuItem[]
-
-  RoleDepartment RoleDepartment[]
-
-  RoleTrans RoleTrans[]
+  /// 用户 - 角色
+  userRoles       UserRole[]
+  /// 角色 - 菜单
+  roleMenuItems   RoleMenuItem[]
+  /// 角色 - 部门
+  roleDepartments RoleDepartment[]
+  /// 角色 - 翻译
+  roleTrans       RoleTrans[]
 
   /// 创建时间
   createdAt DateTime? @default(now()) @map("created_at") @db.Timestamptz(3)
@@ -162,7 +161,7 @@ model Role {
 
 /// 角色 - 翻译
 model RoleTrans {
-  /// ID
+  /// 唯一标识
   id     Int     @id @default(autoincrement())
   /// 语言
   lang   Lang
@@ -195,7 +194,7 @@ model RoleTrans {
 
 /// 用户 - 角色
 model UserRole {
-  /// ID
+  /// 唯一标识
   id Int @id @default(autoincrement())
 
   /// 用户
@@ -226,7 +225,7 @@ model UserRole {
 
 /// 菜单
 model MenuItem {
-  /// ID
+  /// 唯一标识
   id            Int          @id @default(autoincrement())
   /// 类型
   type          MenuItemType
@@ -236,6 +235,8 @@ model MenuItem {
   icon          String?      @db.VarChar(50)
   /// 组件路径
   componentPath String?      @map("component_path") @db.VarChar(255)
+  /// 权限编码
+  code          String?      @db.VarChar(255)
   /// 是否隐藏
   hidden        Boolean      @default(false)
   /// 是否启用
@@ -244,20 +245,17 @@ model MenuItem {
   builtIn       Boolean      @default(false) @map("built_in")
   /// 排序
   sortOrder     Int          @default(0) @map("sort_order")
-  /// 权限代码
-  code          String?      @db.VarChar(255)
 
   /// 父级菜单
-  parent   MenuItem? @relation("MenuItemToParent", fields: [parentId], references: [id])
+  parent        MenuItem?       @relation("MenuItemToParent", fields: [parentId], references: [id])
   /// 父级菜单 ID
-  parentId Int?      @map("parent_id")
-
+  parentId      Int?            @map("parent_id")
   /// 子级菜单
-  children MenuItem[] @relation("MenuItemToParent")
-
+  children      MenuItem[]      @relation("MenuItemToParent")
+  /// 角色 - 菜单
   roleMenuItems RoleMenuItem[]
-
-  MenuItemTrans MenuItemTrans[]
+  /// 菜单 - 翻译
+  menuItemTrans MenuItemTrans[]
 
   /// 创建时间
   createdAt DateTime? @default(now()) @map("created_at") @db.Timestamptz(3)
@@ -277,7 +275,7 @@ model MenuItem {
 
 /// 菜单 - 翻译
 model MenuItemTrans {
-  /// ID
+  /// 唯一标识
   id     Int     @id @default(autoincrement())
   /// 语言
   lang   String
@@ -310,7 +308,7 @@ model MenuItemTrans {
 
 /// 角色 - 菜单
 model RoleMenuItem {
-  /// ID
+  /// 唯一标识
   id Int @id @default(autoincrement())
 
   /// 角色
@@ -341,7 +339,7 @@ model RoleMenuItem {
 
 /// 部门
 model Department {
-  /// ID
+  /// 唯一标识
   id          Int     @id @default(autoincrement())
   /// 负责人
   leader      String? @db.VarChar(50)
@@ -355,19 +353,19 @@ model Department {
   builtIn     Boolean @default(false) @map("built_in")
   /// 排序
   sortOrder   Int     @default(0) @map("sort_order")
-
   /// 祖先部门
-  parentIds Int[]        @map("parent_Ids")
+  parentIds   Int[]   @map("parent_Ids")
+
   /// 父级部门
-  parent    Department?  @relation("DepartmentToParent", fields: [parentId], references: [id])
+  parent          Department?       @relation("DepartmentToParent", fields: [parentId], references: [id])
   /// 父级部门 ID
-  parentId  Int?         @map("parent_id")
+  parentId        Int?              @map("parent_id")
   /// 子级部门
-  children  Department[] @relation("DepartmentToParent")
-
-  RoleDepartment RoleDepartment[]
-
-  DepartmentTrans DepartmentTrans[]
+  children        Department[]      @relation("DepartmentToParent")
+  /// 角色 - 部门
+  roleDepartments RoleDepartment[]
+  /// 部门 - 翻译
+  departmentTrans DepartmentTrans[]
 
   /// 创建时间
   createdAt DateTime? @default(now()) @map("created_at") @db.Timestamptz(3)
@@ -387,7 +385,7 @@ model Department {
 
 /// 部门 - 翻译
 model DepartmentTrans {
-  /// ID
+  /// 唯一标识
   id     Int     @id @default(autoincrement())
   /// 语言
   lang   String
@@ -419,7 +417,7 @@ model DepartmentTrans {
 
 /// 角色 - 部门
 model RoleDepartment {
-  /// ID
+  /// 唯一标识
   id Int @id @default(autoincrement())
 
   /// 角色
@@ -450,7 +448,7 @@ model RoleDepartment {
 
 /// 职位
 model Position {
-  /// ID
+  /// 唯一标识
   id        Int     @id @default(autoincrement())
   /// 职位编码
   code      String  @unique @db.VarChar(50)
@@ -461,9 +459,10 @@ model Position {
   /// 排序
   sortOrder Int?    @default(0) @map("sort_order")
 
-  userPosition UserPosition[]
-
-  PositionTrans PositionTrans[]
+  /// 用户 - 部门
+  userPositions UserPosition[]
+  /// 职位 - 翻译
+  positionTrans PositionTrans[]
 
   /// 创建时间
   createdAt DateTime? @default(now()) @map("created_at") @db.Timestamptz(3)
@@ -483,7 +482,7 @@ model Position {
 
 /// 职位 - 翻译
 model PositionTrans {
-  /// ID
+  /// 唯一标识
   id     Int     @id @default(autoincrement())
   /// 语言
   lang   Lang
@@ -516,18 +515,17 @@ model PositionTrans {
 
 /// 用户 - 职位
 model UserPosition {
-  /// ID
+  /// 唯一标识
   id Int @id @default(autoincrement())
 
   /// 用户
-  user   User @relation(fields: [userId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
   /// 用户 ID
-  userId Int  @map("user_id")
-
+  userId     Int      @map("user_id")
   /// 职位
   position   Position @relation(fields: [positionId], references: [id])
   /// 职位 ID
-  positionId Int      @map("role_id")
+  positionId Int      @map("position_id")
 
   /// 创建时间
   createdAt DateTime? @default(now()) @map("created_at") @db.Timestamptz(3)
@@ -547,13 +545,12 @@ model UserPosition {
 
 // 设置
 model Setting {
-  /// ID
-  id    Int     @id @default(autoincrement())
+  /// 唯一标识
+  id        Int     @id @default(autoincrement())
   /// 键
-  key   String  @unique @db.VarChar(100)
+  key       String  @unique @db.VarChar(100)
   /// 值
-  value String? @db.VarChar(255)
-
+  value     String? @db.VarChar(255)
   /// 是否启用
   enabled   Boolean @default(true)
   /// 是否内置
@@ -562,11 +559,11 @@ model Setting {
   sortOrder Int?    @default(0) @map("sort_order")
 
   /// 用户
-  user   User @relation(fields: [userId], references: [id])
+  user         User           @relation(fields: [userId], references: [id])
   /// 用户 ID
-  userId Int  @unique @map("user_id")
-
-  SettingTrans SettingTrans[]
+  userId       Int            @unique @map("user_id")
+  /// 设置 - 翻译
+  settingTrans SettingTrans[]
 
   /// 创建时间
   createdAt DateTime? @default(now()) @map("created_at") @db.Timestamptz(3)
@@ -584,9 +581,9 @@ model Setting {
   @@map("system_setting")
 }
 
-/// 参数 - 翻译
+/// 设置 - 翻译
 model SettingTrans {
-  /// ID
+  /// 唯一标识
   id     Int     @id @default(autoincrement())
   /// 语言
   lang   Lang
@@ -621,7 +618,7 @@ model SettingTrans {
 model Dictionary {
   /// ID
   id        Int     @id @default(autoincrement())
-  // 字典代码
+  // 字典编码
   code      String  @unique @db.VarChar(50)
   /// 是否启用
   enabled   Boolean @default(true)
@@ -632,7 +629,6 @@ model Dictionary {
 
   /// 字典 - 字典项
   dictionaryItems DictionaryItem[]
-
   /// 字典 - 翻译
   dictionaryTrans DictionaryTrans[]
 
@@ -654,7 +650,7 @@ model Dictionary {
 
 // 字典 - 翻译
 model DictionaryTrans {
-  /// ID
+  /// 唯一标识
   id     Int     @id @default(autoincrement())
   /// 语言
   lang   Lang
@@ -685,9 +681,9 @@ model DictionaryTrans {
   @@map("system_dictionary_trans")
 }
 
-/// 字典键值对
+/// 字典数据
 model DictionaryItem {
-  /// ID
+  /// 唯一标识
   id        Int     @id @default(autoincrement())
   /// 键
   key       String  @unique @db.VarChar(100)
@@ -701,11 +697,11 @@ model DictionaryItem {
   sortOrder Int?    @default(0) @map("sort_order")
 
   /// 字典
-  dictionary   Dictionary @relation(fields: [dictionaryId], references: [id])
+  dictionary          Dictionary            @relation(fields: [dictionaryId], references: [id])
   /// 字典 ID
-  dictionaryId Int        @map("dictionary_id")
-
-  DictionaryItemTrans DictionaryItemTrans[]
+  dictionaryId        Int                   @map("dictionary_id")
+  /// 字典数据 - 翻译
+  dictionaryItemTrans DictionaryItemTrans[]
 
   /// 创建时间
   createdAt DateTime? @default(now()) @map("created_at") @db.Timestamptz(3)
@@ -723,9 +719,9 @@ model DictionaryItem {
   @@map("system_dictionary_item")
 }
 
-// 字典键值对 - 翻译
+// 字典数据 - 翻译
 model DictionaryItemTrans {
-  /// ID
+  /// 唯一标识
   id     Int     @id @default(autoincrement())
   /// 语言
   lang   Lang
@@ -758,7 +754,7 @@ model DictionaryItemTrans {
 
 /// 系统通知
 model Notification {
-  /// ID
+  /// 唯一标识
   id      Int     @id @default(autoincrement())
   /// 类型：数据字典
   type    String  @db.VarChar(50)
@@ -766,11 +762,11 @@ model Notification {
   enabled Boolean @default(true)
 
   /// 用户
-  user   User @relation(fields: [userId], references: [id])
+  user              User                @relation(fields: [userId], references: [id])
   /// 用户 ID
-  userId Int  @map("user_id")
-
-  NotificationTrans NotificationTrans[]
+  userId            Int                 @map("user_id")
+  /// 系统通知 - 翻译
+  notificationTrans NotificationTrans[]
 
   /// 创建时间
   createdAt DateTime? @default(now()) @map("created_at") @db.Timestamptz(3)
@@ -790,7 +786,7 @@ model Notification {
 
 // 系统通知 - 翻译
 model NotificationTrans {
-  /// ID
+  /// 唯一标识
   id      Int     @id @default(autoincrement())
   /// 语言
   lang    Lang
@@ -825,7 +821,7 @@ model NotificationTrans {
 
 /// 用户流量记录
 model UserTraffic {
-  /// ID
+  /// 唯一标识
   id        Int       @id @default(autoincrement())
   /// 应用名称
   app       String?   @db.VarChar(25)
@@ -855,10 +851,9 @@ model UserTraffic {
   duration  Int?
 
   /// 用户
-  user   User @relation(fields: [userId], references: [id])
+  user               User                @relation(fields: [userId], references: [id])
   /// 用户 ID
-  userId Int  @map("user_id")
-
+  userId             Int                 @map("user_id")
   /// 访问记录
   userTrafficRecords UserTrafficRecord[]
 
@@ -880,7 +875,7 @@ model UserTraffic {
 
 /// 用户路由访问记录
 model UserTrafficRecord {
-  /// ID
+  /// 唯一标识
   id       Int       @id @default(autoincrement())
   /// 路由标题
   title    String?   @db.VarChar(50)
@@ -918,7 +913,7 @@ model UserTrafficRecord {
 
 /// 登录日志
 model LoginLog {
-  /// ID
+  /// 唯一标识
   id        Int      @id @default(autoincrement())
   /// 用户 IP
   ip        String   @db.VarChar(25)
@@ -958,7 +953,7 @@ model LoginLog {
 
 /// 操作日志
 model OperationLog {
-  /// ID
+  /// 唯一标识
   id                 Int     @id @default(autoincrement())
   /// 模块名称
   moduleName         String? @db.VarChar(25)

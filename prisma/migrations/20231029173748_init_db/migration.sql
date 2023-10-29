@@ -11,7 +11,7 @@ CREATE TYPE "Lang" AS ENUM ('zh_CN', 'en_US');
 CREATE TABLE "system_user" (
     "id" SERIAL NOT NULL,
     "username" VARCHAR(30) NOT NULL,
-    "nick_name" VARCHAR(50) NOT NULL,
+    "nick_name" VARCHAR(50),
     "password" VARCHAR(100),
     "email" VARCHAR(50),
     "phone_number" VARCHAR(25),
@@ -24,12 +24,10 @@ CREATE TABLE "system_user" (
     "province" VARCHAR(25),
     "city" VARCHAR(25),
     "address" VARCHAR(100),
-    "biography" VARCHAR(255),
-    "website" VARCHAR(255),
-    "profile" VARCHAR(100),
+    "biography" VARCHAR(500),
+    "website" VARCHAR(50),
+    "profile" VARCHAR(50),
     "birth_date" DATE,
-    "ip" VARCHAR(50),
-    "last_login_at" TIMESTAMPTZ(3),
     "enabled" BOOLEAN NOT NULL DEFAULT true,
     "built_in" BOOLEAN NOT NULL DEFAULT false,
     "created_at" TIMESTAMPTZ(3) DEFAULT CURRENT_TIMESTAMP,
@@ -116,11 +114,11 @@ CREATE TABLE "system_menu_item" (
     "path" VARCHAR(255),
     "icon" VARCHAR(50),
     "component_path" VARCHAR(255),
+    "code" VARCHAR(255),
     "hidden" BOOLEAN NOT NULL DEFAULT false,
     "enabled" BOOLEAN NOT NULL DEFAULT true,
     "built_in" BOOLEAN NOT NULL DEFAULT false,
     "sort_order" INTEGER NOT NULL DEFAULT 0,
-    "code" VARCHAR(255),
     "parent_id" INTEGER,
     "created_at" TIMESTAMPTZ(3) DEFAULT CURRENT_TIMESTAMP,
     "created_by" INTEGER,
@@ -255,7 +253,7 @@ CREATE TABLE "system_position_trans" (
 CREATE TABLE "system_user_position" (
     "id" SERIAL NOT NULL,
     "user_id" INTEGER NOT NULL,
-    "role_id" INTEGER NOT NULL,
+    "position_id" INTEGER NOT NULL,
     "created_at" TIMESTAMPTZ(3) DEFAULT CURRENT_TIMESTAMP,
     "created_by" INTEGER,
     "updated_at" TIMESTAMPTZ(3),
@@ -598,7 +596,7 @@ ALTER TABLE "system_position_trans" ADD CONSTRAINT "system_position_trans_positi
 ALTER TABLE "system_user_position" ADD CONSTRAINT "system_user_position_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "system_user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "system_user_position" ADD CONSTRAINT "system_user_position_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES "system_position"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "system_user_position" ADD CONSTRAINT "system_user_position_position_id_fkey" FOREIGN KEY ("position_id") REFERENCES "system_position"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "system_setting" ADD CONSTRAINT "system_setting_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "system_user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
