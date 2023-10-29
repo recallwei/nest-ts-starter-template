@@ -1,26 +1,47 @@
+import { HttpModule } from '@nestjs/axios'
+import { BullModule } from '@nestjs/bull'
 import { Module } from '@nestjs/common'
-import { ConfigModule } from '@nestjs/config'
-import { APP_INTERCEPTOR } from '@nestjs/core'
+import { ConfigModule, ConfigService } from '@nestjs/config'
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core'
+import { EventEmitterModule } from '@nestjs/event-emitter'
+import { JwtModule } from '@nestjs/jwt'
+import { MongooseModule } from '@nestjs/mongoose'
+import { ScheduleModule } from '@nestjs/schedule'
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
 import Joi from 'joi'
 
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { AuthModule } from './auth/auth.module'
 import {
+  AuthGuard,
   ErrorsInterceptor,
   LoggingInterceptor,
   TimeoutInterceptor
 } from './common'
 import { CosModule } from './cos/cos.module'
+import { CronJobLogsModule } from './cron-job-logs/cron-job-logs.module'
+import { CronJobsModule } from './cron-jobs/cron-jobs.module'
+import { DepartmentsModule } from './departments/departments.module'
 import { DictionariesModule } from './dictionaries/dictionaries.module'
+import { DictionaryItemsModule } from './dictionary-items/dictionary-items.module'
 import { FilesModule } from './files/files.module'
+import { LoginLogsModule } from './login-logs/login-logs.module'
+import { MenuItemsModule } from './menu-items/menu-items.module'
+import { NotificationsModule } from './notifications/notifications.module'
+import { OperationLogsModule } from './operation-logs/operation-logs.module'
 import { PermissionsModule } from './permissions/permissions.module'
+import { PositionsModule } from './positions/positions.module'
 import { PrismaModule } from './prisma/prisma.module'
 import { RolesModule } from './roles/roles.module'
+import { SettingsModule } from './settings/settings.module'
+import { UserTrafficRecordsModule } from './user-traffic-records/user-traffic-records.module'
+import { UserTrafficsModule } from './user-traffics/user-traffics.module'
 import { UsersModule } from './users/users.module'
 
 @Module({
   imports: [
+    // 配置模块
     ConfigModule.forRoot({
       envFilePath: ['.env.development.local', '.env.development', '.env'], // 优先匹配 .env
       isGlobal: true, // 声明为全局模块
@@ -30,18 +51,90 @@ import { UsersModule } from './users/users.module'
       }),
       expandVariables: true // 允许变量扩展
     }),
+    // JWT 模块
+    JwtModule.registerAsync({
+      global: true,
+      imports: [ConfigModule],
+      // eslint-disable-next-line @typescript-eslint/require-await
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+        signOptions: { expiresIn: '1d' }
+      }),
+      inject: [ConfigService]
+    }),
+    // 限流模块
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 10
+      }
+    ]),
+    // Mongoose 模块
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      // eslint-disable-next-line @typescript-eslint/require-await
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get<string>('MONGO_URL')
+      }),
+      inject: [ConfigService]
+    }),
+    // 定时任务模块
+    ScheduleModule.forRoot(),
+    // 队列模块
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      // eslint-disable-next-line @typescript-eslint/require-await
+      useFactory: async (configService: ConfigService) => ({
+        redis: {
+          host: configService.get<string>('REDIS_HOST'),
+          port: configService.get<number>('REDIS_PORT')
+        }
+      }),
+      inject: [ConfigService]
+    }),
+    // 事件模块
+    EventEmitterModule.forRoot(),
+    // HTTP 模块
+    HttpModule.registerAsync({
+      // eslint-disable-next-line @typescript-eslint/require-await
+      useFactory: async () => ({
+        timeout: 5000,
+        maxRedirects: 5
+      })
+    }),
     PrismaModule,
     AuthModule,
     UsersModule,
     RolesModule,
     PermissionsModule,
+    DepartmentsModule,
+    PositionsModule,
+    MenuItemsModule,
+    SettingsModule,
     DictionariesModule,
+    DictionaryItemsModule,
     FilesModule,
-    CosModule
+    CosModule,
+    NotificationsModule,
+    CronJobsModule,
+    UserTrafficsModule,
+    UserTrafficRecordsModule,
+    OperationLogsModule,
+    CronJobLogsModule,
+    LoginLogsModule
   ],
   controllers: [AppController],
   providers: [
     AppService,
+    // 注册全局守卫
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard
+    },
     {
       provide: APP_INTERCEPTOR,
       useClass: LoggingInterceptor

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import COS from 'cos-nodejs-sdk-v5'
 import { sep } from 'path'
@@ -68,6 +68,10 @@ export class CosService {
 
   uploadFiles(files: Express.Multer.File[]) {
     this.checkConfig()
+    if (!Array.isArray(files)) {
+      throw new BadRequestException('No files to upload!')
+    }
+    console.log(files)
     const filesResult: COS.UploadFileItemParams[] = files.map((file) => ({
       Bucket: this.bucket!,
       Region: this.region!,

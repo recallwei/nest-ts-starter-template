@@ -8,7 +8,7 @@ import type { Request } from 'express'
 import { SKIP_AUTH } from '@/common/constants'
 import type { CustomRequest } from '@/common/interfaces'
 
-import type { JWTPayload } from './interfaces'
+import type { JWTPayload } from '../interfaces'
 
 @Injectable()
 export class AuthGuard implements CanActivate {

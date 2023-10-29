@@ -31,7 +31,7 @@ export class CosController {
   })
   @ApiBody({ description: '上传的文件' })
   @UseInterceptors(AnyFilesInterceptor())
-  @Post('cos')
+  @Post()
   uploadToCos(@UploadedFiles() files: Express.Multer.File[]) {
     return this.cosService.uploadToCos(files)
   }

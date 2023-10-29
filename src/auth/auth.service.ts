@@ -3,11 +3,11 @@ import { JwtService } from '@nestjs/jwt'
 import { compare } from '@node-rs/bcrypt'
 import type { User } from '@prisma/client'
 
+import type { JWTPayload } from '@/common'
 import { PrismaService } from '@/prisma/prisma.service'
 import { UsersService } from '@/users/users.service'
 
 import type { LoginDto } from './dto'
-import type { JWTPayload } from './interfaces'
 
 @Injectable()
 export class AuthService {

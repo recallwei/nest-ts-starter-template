@@ -14,7 +14,34 @@ import { AppModule } from './app.module'
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    abortOnError: false
+    abortOnError: false,
+    logger: ['error', 'warn', 'log', 'debug', 'verbose'],
+    // 跨域设置
+    cors: {
+      origin: ['http://localhost:*', 'https://bit-ocean.studio'],
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+      preflightContinue: false,
+      optionsSuccessStatus: 204
+    }
+  })
+
+  const configService = app.get(ConfigService)
+  const isDev = configService.get<string>('NODE_ENV') === 'development'
+
+  // 跨域白名单
+  const corsOriginWhiteList = ['https://bit-ocean.studio']
+
+  // 开发环境允许跨域
+  if (isDev) {
+    corsOriginWhiteList.push('http://localhost:*')
+  }
+
+  // 跨域设置
+  app.enableCors({
+    origin: corsOriginWhiteList, // 允许跨域的域名
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    preflightContinue: false,
+    optionsSuccessStatus: 204
   })
 
   // 全局管道
@@ -30,7 +57,7 @@ async function bootstrap() {
     })
   )
 
-  // 全局拦截器
+  // 全局拦截器 - 序列化
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)))
 
   // 全局前缀 - 如果没有子域名，可以设置全局前置
@@ -90,8 +117,6 @@ async function bootstrap() {
    * 例如：http://localhost:3000/api/docs-json
    */
   SwaggerModule.setup('api/docs', app, document)
-
-  const configService = app.get(ConfigService)
 
   const port = configService.get<string>('PORT') ?? 3000
 

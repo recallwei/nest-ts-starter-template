@@ -17,5 +17,7 @@ describe('AppController (e2e)', () => {
     await app.init()
   })
 
+  // TODO: Skip AuthGuard for testing
   it('/ (GET)', () => request(app.getHttpServer()).get('/').expect(401))
+  // .expect({ title: 'Nest TypeScript Starter Template' })
 })

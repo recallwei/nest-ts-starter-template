@@ -25,8 +25,13 @@ import {
 } from '@nestjs/swagger'
 import { plainToClass } from 'class-transformer'
 
-import { JWTPayload } from '@/auth/interfaces'
-import { ApiPageQuery, OkResponseVo, PageDateDto, User } from '@/common'
+import {
+  ApiPageQuery,
+  JWTPayload,
+  OkResponseVo,
+  PageDateDto,
+  User
+} from '@/common'
 
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'

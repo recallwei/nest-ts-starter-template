@@ -1,10 +1,37 @@
 version: '3'
 services:
   postgres:
-    image: postgres:16
     container_name: postgres-db
+    image: postgres:16
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     restart: always
     ports:
-      - 5433:5432
+      - 5432:5432
     env_file:
       - .env
+
+  mongodb:
+    container_name: mongodb-db
+    image: mongo
+    volumes:
+      - mongo_data:/data/db
+    restart: always
+    ports:
+      - 27017:27017
+    env_file:
+      - .env
+
+  redis:
+    container_name: redis-db
+    image: redis
+    volumes:
+      - redis_data:/data
+    restart: always
+    ports:
+      - 6379:6379
+
+volumes:
+  postgres_data:
+  mongo_data:
+  redis_data:
