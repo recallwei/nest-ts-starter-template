@@ -15,15 +15,10 @@ import { AppModule } from './app.module'
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     abortOnError: false,
-    logger: ['error', 'warn', 'log', 'debug', 'verbose'],
-    // 跨域设置
-    cors: {
-      origin: ['http://localhost:*', 'https://bit-ocean.studio'],
-      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-      preflightContinue: false,
-      optionsSuccessStatus: 204
-    }
+    bufferLogs: true
   })
+
+  // app.useLogger(app.get())
 
   const configService = app.get(ConfigService)
   const isDev = configService.get<string>('NODE_ENV') === 'development'

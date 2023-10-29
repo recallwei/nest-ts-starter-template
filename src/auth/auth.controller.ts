@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Ip,
   ParseEnumPipe,
   Post,
   Query
@@ -86,8 +87,11 @@ export class AuthController {
       })
     )
     type: LoginType,
-    @Body() loginDto: LoginDto
+    @Body() loginDto: LoginDto,
+    @Ip() ip: string
   ) {
+    console.log(ip)
+
     let user: User
 
     switch (type) {

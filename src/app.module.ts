@@ -26,6 +26,7 @@ import { DepartmentsModule } from './departments/departments.module'
 import { DictionariesModule } from './dictionaries/dictionaries.module'
 import { DictionaryItemsModule } from './dictionary-items/dictionary-items.module'
 import { FilesModule } from './files/files.module'
+import { LoggerModule } from './logger/logger.module'
 import { LoginLogsModule } from './login-logs/login-logs.module'
 import { MenuItemsModule } from './menu-items/menu-items.module'
 import { NotificationsModule } from './notifications/notifications.module'
@@ -103,6 +104,7 @@ import { UsersModule } from './users/users.module'
       })
     }),
     PrismaModule,
+    LoggerModule,
     AuthModule,
     UsersModule,
     RolesModule,
@@ -126,23 +128,27 @@ import { UsersModule } from './users/users.module'
   controllers: [AppController],
   providers: [
     AppService,
-    // 注册全局守卫
+    // 注册全局认证守卫
     {
       provide: APP_GUARD,
       useClass: AuthGuard
     },
+    // 注册全局限流守卫
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard
     },
+    // 注册全局日志拦截器
     {
       provide: APP_INTERCEPTOR,
       useClass: LoggingInterceptor
     },
+    // 注册全局超时拦截器
     {
       provide: APP_INTERCEPTOR,
       useClass: TimeoutInterceptor
     },
+    // 注册全局错误拦截器
     {
       provide: APP_INTERCEPTOR,
       useClass: ErrorsInterceptor
