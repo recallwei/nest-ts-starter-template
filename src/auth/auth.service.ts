@@ -37,7 +37,7 @@ export class AuthService {
       throw new BadRequestException('用户名不存在')
     }
 
-    if (!(await compare(loginDto.password, user.password))) {
+    if (!(await compare(loginDto.password, user.password ?? ''))) {
       throw new BadRequestException('用户名或密码不正确')
     }
 
