@@ -1,3 +1,4 @@
 .husky
 pnpm-lock.yaml
 src/generated
+src/metadata.ts
