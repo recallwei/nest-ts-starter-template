@@ -1,16 +1,20 @@
 import { join } from 'node:path'
+import { stdout } from 'node:process'
 
-import {
-  ClassSerializerInterceptor,
-  ValidationPipe,
-  VersioningType
-} from '@nestjs/common'
+import { ClassSerializerInterceptor, VersioningType } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { NestFactory, Reflector } from '@nestjs/core'
 import type { NestExpressApplication } from '@nestjs/platform-express'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
+import figlet from 'figlet'
+import gradient from 'gradient-string'
+import { I18nValidationPipe } from 'nestjs-i18n'
 
+import { I18nValidationExceptionFilter } from '@/common'
+
+import { AppConfig } from './app.config'
 import { AppModule } from './app.module'
+import metadata from './metadata'
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -39,9 +43,9 @@ async function bootstrap() {
     optionsSuccessStatus: 204
   })
 
-  // 全局管道
+  // 全局管道 - 验证/国际化
   app.useGlobalPipes(
-    new ValidationPipe({
+    new I18nValidationPipe({
       whitelist: true, // 自动删除非 dto 中的属性
       transform: true, // 自动转换类型
       transformOptions: {
@@ -51,6 +55,9 @@ async function bootstrap() {
       stopAtFirstError: true
     })
   )
+
+  // 全局过滤器 - 国际化
+  app.useGlobalFilters(new I18nValidationExceptionFilter())
 
   // 全局拦截器 - 序列化
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)))
@@ -102,7 +109,7 @@ async function bootstrap() {
       name: 'bearer'
     })
     .build()
-
+  await SwaggerModule.loadPluginMetadata(metadata)
   const document = SwaggerModule.createDocument(app, config, {})
 
   /**
@@ -117,4 +124,16 @@ async function bootstrap() {
 
   await app.listen(+port)
 }
-bootstrap().catch(() => {})
+bootstrap()
+  .then(() => {
+    figlet(AppConfig.APP_NAME, (err, data) => {
+      if (err) {
+        stdout.write('Something went wrong...')
+        return
+      }
+      stdout.write(`\n${gradient.rainbow(data)}\n\n`)
+    })
+  })
+  .catch((err) => {
+    console.log(err)
+  })

@@ -10,10 +10,8 @@
     "watchAssets": false,
     "assets": [
       "**/*.css",
-      {
-        "include": "**/*.html",
-        "watchAssets": true
-      }
+      { "include": "**/*.html", "watchAssets": true },
+      { "include": "i18n/**/*", "watchAssets": true }
     ],
     "tsConfigPath": "tsconfig.build.json",
     "webpackConfigPath": "webpack.config.js",

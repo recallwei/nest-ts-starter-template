@@ -1,2 +1,3 @@
 .husky
 pnpm-lock.yaml
+src/generated

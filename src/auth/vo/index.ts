@@ -1,1 +1,1 @@
-export * from './login.vo'
+export * from './auth.vo'

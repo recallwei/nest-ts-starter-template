@@ -1,3 +1,5 @@
+import path from 'node:path'
+
 import { HttpModule } from '@nestjs/axios'
 import { BullModule } from '@nestjs/bull'
 import { Module } from '@nestjs/common'
@@ -9,6 +11,7 @@ import { MongooseModule } from '@nestjs/mongoose'
 import { ScheduleModule } from '@nestjs/schedule'
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
 import Joi from 'joi'
+import { AcceptLanguageResolver, I18nModule, QueryResolver } from 'nestjs-i18n'
 
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
@@ -51,6 +54,22 @@ import { UsersModule } from './users/users.module'
         PORT: Joi.number().default(3000)
       }),
       expandVariables: true // 允许变量扩展
+    }),
+    // i18n 模块
+    I18nModule.forRoot({
+      fallbackLanguage: 'en-US',
+      loaderOptions: {
+        path: path.join(__dirname, '/i18n/'),
+        watch: true
+      },
+      resolvers: [
+        { use: QueryResolver, options: ['lang'] },
+        AcceptLanguageResolver
+      ],
+      typesOutputPath: path.join(
+        __dirname,
+        '../src/generated/i18n.generated.ts'
+      )
     }),
     // JWT 模块
     JwtModule.registerAsync({

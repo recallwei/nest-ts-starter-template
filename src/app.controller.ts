@@ -1,7 +1,10 @@
 import { Controller, Get, Inject, Redirect, Render } from '@nestjs/common'
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { ApiOperation, ApiTags } from '@nestjs/swagger'
+import { I18n, I18nContext } from 'nestjs-i18n'
 
 import { AppService } from './app.service'
+import { ApiBaseResponse, BaseResponseVo } from './common'
+import type { I18nTranslations } from './generated/i18n.generated'
 
 @ApiTags('应用')
 @Controller()
@@ -10,7 +13,7 @@ export class AppController {
   private readonly appService: AppService
 
   @ApiOperation({ summary: '应用首页' })
-  @ApiOkResponse({ description: '请求成功' })
+  @ApiBaseResponse()
   @Render('index')
   @Get()
   getApp() {
@@ -18,15 +21,28 @@ export class AppController {
   }
 
   @ApiOperation({ summary: '应用信息' })
-  @ApiOkResponse({ description: '请求成功' })
+  @ApiBaseResponse()
   @Get('app-info')
-  getVersion() {
-    return this.appService.getAppInfo()
+  getVersion(@I18n() i18n: I18nContext<I18nTranslations>) {
+    const appInfo = this.appService.getAppInfo()
+    appInfo.name = i18n.t('common.APP.NAME')
+    return new BaseResponseVo({
+      data: appInfo
+    })
   }
 
   @ApiOperation({ summary: '测试重定向' })
-  @ApiOkResponse({ description: '请求成功' })
+  @ApiBaseResponse()
   @Redirect('/')
   @Get('redirect')
   getRedirect() {}
+
+  @ApiOperation({ summary: '语言标识' })
+  @ApiBaseResponse()
+  @Get('lang')
+  getCurrentLang(@I18n() i18n: I18nContext<I18nTranslations>) {
+    return new BaseResponseVo({
+      data: i18n.lang
+    })
+  }
 }

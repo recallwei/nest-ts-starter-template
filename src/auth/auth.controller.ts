@@ -2,7 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
-  Ip,
+  HttpStatus,
   ParseEnumPipe,
   Post,
   Query
@@ -11,7 +11,6 @@ import {
   ApiBadRequestResponse,
   ApiBody,
   ApiConflictResponse,
-  ApiCreatedResponse,
   ApiNotImplementedResponse,
   ApiOperation,
   ApiQuery,
@@ -20,14 +19,16 @@ import {
 } from '@nestjs/swagger'
 import type { User } from '@prisma/client'
 import { plainToClass } from 'class-transformer'
+import { I18n, I18nContext } from 'nestjs-i18n'
 
-import { ApiOkBaseResponse, OkResponseVo, SkipAuth } from '@/common'
+import { ApiBaseResponse, BaseResponseVo, SkipAuth } from '@/common'
+import type { I18nTranslations } from '@/generated/i18n.generated'
 import { UserVo } from '@/users/vo'
 
 import { AuthService } from './auth.service'
 import { LoginDto } from './dto'
 import { LoginType } from './enum'
-import { LoginVo } from './vo'
+import { AuthVo } from './vo'
 
 @ApiTags('认证')
 @SkipAuth()
@@ -36,7 +37,11 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @ApiOperation({ summary: '注册' })
-  @ApiCreatedResponse({ description: '注册成功' })
+  @ApiBaseResponse({
+    description: '注册成功',
+    status: HttpStatus.CREATED,
+    type: AuthVo
+  })
   @ApiBadRequestResponse({ description: '输入有误' })
   @ApiUnauthorizedResponse({ description: '认证失败' })
   @ApiConflictResponse({ description: '用户名已存在' })
@@ -46,7 +51,7 @@ export class AuthController {
   }
 
   @ApiOperation({ summary: '登录' })
-  @ApiOkBaseResponse({ description: '登录成功', type: LoginVo })
+  @ApiBaseResponse({ description: '登录成功', type: AuthVo })
   @ApiBadRequestResponse({ description: '用户名或密码不正确' })
   @ApiUnauthorizedResponse({ description: '认证失败' })
   @ApiNotImplementedResponse({ description: '不支持该登录方式' })
@@ -83,15 +88,18 @@ export class AuthController {
     @Query(
       'type',
       new ParseEnumPipe(LoginType, {
-        exceptionFactory: () => new BadRequestException('不支持该登录方式')
+        exceptionFactory: () => {
+          const i18n = I18nContext.current<I18nTranslations>()!
+          return new BadRequestException(
+            i18n.t('auth.LOGIN.TYPE_NOT_SUPPORTED')
+          )
+        }
       })
     )
     type: LoginType,
     @Body() loginDto: LoginDto,
-    @Ip() ip: string
+    @I18n() i18n: I18nContext<I18nTranslations>
   ) {
-    console.log(ip)
-
     let user: User
 
     switch (type) {
@@ -103,15 +111,15 @@ export class AuthController {
       case LoginType.email:
         return this.authService.loginByEmail(loginDto)
       default:
-        return new BadRequestException('不支持该登录方式')
+        return new BadRequestException(i18n.t('auth.LOGIN.TYPE_NOT_SUPPORTED'))
     }
 
-    return new OkResponseVo({
-      data: new LoginVo({
+    return new BaseResponseVo({
+      data: new AuthVo({
         user: plainToClass(UserVo, user),
         accessToken: this.authService.generateToken(user)
       }),
-      message: '登录成功'
+      message: i18n.t('auth.LOGIN.SUCCESS')
     })
   }
 }

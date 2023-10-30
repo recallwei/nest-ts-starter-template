@@ -3,7 +3,7 @@ import { Prisma } from '@prisma/client'
 import { plainToClass, plainToInstance } from 'class-transformer'
 
 import type { PageDateDto } from '@/common'
-import { OkResponseVo } from '@/common'
+import { BaseResponseVo } from '@/common'
 import { PrismaService } from '@/prisma/prisma.service'
 
 import type { CreateUserDto } from './dto/create-user.dto'
@@ -20,7 +20,7 @@ export class UsersService {
         data: createUserDto
       })
       const userVo = plainToClass(UserVo, user)
-      return new OkResponseVo<UserVo>({
+      return new BaseResponseVo<UserVo>({
         data: userVo
       })
     } catch (err) {
@@ -36,12 +36,13 @@ export class UsersService {
     }
   }
 
-  async findMany(pageDateDto: PageDateDto): Promise<UserVo[]> {
+  async findMany(pageDateDto: PageDateDto): Promise<[UserVo[], number]> {
     const { page, pageSize, searchText, startTime, endTime } = pageDateDto
     console.log(page, pageSize, searchText, startTime, endTime)
     const users = await this.prismaService.user.findMany()
+    const total = await this.prismaService.user.count()
     const userVoList = plainToInstance(UserVo, users)
-    return userVoList
+    return [userVoList, total]
   }
 
   findOneById(id: number) {

@@ -4,9 +4,11 @@ import { ConfigService } from '@nestjs/config'
 import { Reflector } from '@nestjs/core'
 import { JwtService } from '@nestjs/jwt'
 import type { Request } from 'express'
+import { I18nContext } from 'nestjs-i18n'
 
 import { SKIP_AUTH } from '@/common/constants'
 import type { CustomRequest } from '@/common/interfaces'
+import type { I18nTranslations } from '@/generated/i18n.generated'
 
 import type { JWTPayload } from '../interfaces'
 
@@ -29,8 +31,10 @@ export class AuthGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest<CustomRequest>()
     const token = this.extractTokenFromHeader(request)
+
+    const i18n = I18nContext.current<I18nTranslations>()!
     if (!token) {
-      throw new UnauthorizedException('认证失败')
+      throw new UnauthorizedException(i18n.t('auth.UNAUTHORIZED'))
     }
     try {
       const payload = await this.jwtService.verifyAsync<JWTPayload>(token, {
@@ -38,7 +42,7 @@ export class AuthGuard implements CanActivate {
       })
       request.user = payload
     } catch {
-      throw new UnauthorizedException('认证失败')
+      throw new UnauthorizedException(i18n.t('auth.UNAUTHORIZED'))
     }
     return true
   }

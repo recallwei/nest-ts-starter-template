@@ -2,8 +2,10 @@ import { BadRequestException, Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { compare } from '@node-rs/bcrypt'
 import type { User } from '@prisma/client'
+import { I18nService } from 'nestjs-i18n'
 
 import type { JWTPayload } from '@/common'
+import type { I18nTranslations } from '@/generated/i18n.generated'
 import { PrismaService } from '@/prisma/prisma.service'
 import { UsersService } from '@/users/users.service'
 
@@ -14,7 +16,8 @@ export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly prismaService: PrismaService,
-    private readonly usersService: UsersService
+    private readonly usersService: UsersService,
+    private readonly i18nService: I18nService<I18nTranslations>
   ) {}
 
   // 生成 token
@@ -34,11 +37,15 @@ export class AuthService {
   async loginByUsername(loginDto: LoginDto): Promise<User> {
     const user = await this.usersService.findOneByUsername(loginDto.username)
     if (!user) {
-      throw new BadRequestException('用户名不存在')
+      throw new BadRequestException(
+        this.i18nService.t('auth.USERNAME.NOT_EXIST')
+      )
     }
 
     if (!(await compare(loginDto.password, user.password ?? ''))) {
-      throw new BadRequestException('用户名或密码不正确')
+      throw new BadRequestException(
+        this.i18nService.t('auth.USERNAME_OR_PASSWORD_ERROR')
+      )
     }
 
     return user

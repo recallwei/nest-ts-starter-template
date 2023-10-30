@@ -27,11 +27,13 @@ import { plainToClass } from 'class-transformer'
 
 import {
   ApiPageQuery,
+  BaseResponseVo,
   JWTPayload,
-  OkResponseVo,
   PageDateDto,
+  PageResponseVo,
   User
 } from '@/common'
+import { ApiPageResponse } from '@/common/decorators/swagger/api-page-response.decorator'
 
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
@@ -56,15 +58,14 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: '用户列表' })
-  @ApiOkResponse({ description: '请求成功' })
+  @ApiPageResponse(UserVo)
   @ApiUnauthorizedResponse({ description: '认证失败' })
   @ApiPageQuery('searchText', 'date')
   @Get()
   async findMany(@Query() pageDto: PageDateDto) {
-    const userVoList = await this.usersService.findMany(pageDto)
-    return new OkResponseVo<UserVo[]>({
-      data: userVoList
-    })
+    const { page, pageSize } = pageDto
+    const [data, total] = await this.usersService.findMany(pageDto)
+    return new PageResponseVo<UserVo[]>({ page, pageSize, total, data })
   }
 
   @ApiOperation({ summary: '个人信息' })
@@ -80,7 +81,7 @@ export class UsersController {
     if (!currentUser) {
       throw new NotFoundException('用户不存在')
     }
-    return new OkResponseVo<UserVo>({
+    return new BaseResponseVo<UserVo>({
       data: plainToClass(UserVo, currentUser)
     })
   }
@@ -96,7 +97,7 @@ export class UsersController {
     if (!user) {
       throw new NotFoundException('用户不存在')
     }
-    return new OkResponseVo<UserVo>({
+    return new BaseResponseVo<UserVo>({
       data: plainToClass(UserVo, user)
     })
   }
